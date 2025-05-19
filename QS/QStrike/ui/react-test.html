@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React Test Page</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #1890ff;
+    }
+    .test-container {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+    }
+    .success {
+      color: #52c41a;
+    }
+    .error {
+      color: #f5222d;
+    }
+    .test-react {
+      margin-top: 40px;
+      padding: 20px;
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #096dd9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>React Test Page</h1>
+    <p>This page tests if React is working properly in your browser.</p>
+    
+    <div class="test-container">
+      <h2>Browser Compatibility Check</h2>
+      <div id="browser-check"></div>
+    </div>
+    
+    <div class="test-container">
+      <h2>Module Loading Test</h2>
+      <div id="module-check"></div>
+    </div>
+    
+    <div class="test-react">
+      <h2>React Test Component</h2>
+      <div id="react-root"></div>
+      <button id="load-react">Load React Test</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // Browser compatibility check
+    const browserCheck = document.getElementById('browser-check');
+    
+    try {
+      // Test for ES6 features
+      eval('const test = () => {}; class Test {}; new Promise(() => {});');
+      browserCheck.innerHTML += '<p class="success">✓ ES6 features supported</p>';
+    } catch (e) {
+      browserCheck.innerHTML += `<p class="error">✗ ES6 features not fully supported: ${e.message}</p>`;
+    }
+    
+    // Test for fetch API
+    if (typeof fetch === 'function') {
+      browserCheck.innerHTML += '<p class="success">✓ Fetch API supported</p>';
+    } else {
+      browserCheck.innerHTML += '<p class="error">✗ Fetch API not supported</p>';
+    }
+    
+    // Test for import statement
+    const moduleCheck = document.getElementById('module-check');
+    moduleCheck.innerHTML = '<p>Testing dynamic imports...</p>';
+    
+    try {
+      import('./src/main.tsx')
+        .then(() => {
+          moduleCheck.innerHTML = '<p class="success">✓ Module imports working correctly</p>';
+        })
+        .catch(error => {
+          moduleCheck.innerHTML = `<p class="error">✗ Module import failed: ${error.message}</p>`;
+          console.error('Module import error:', error);
+        });
+    } catch (e) {
+      moduleCheck.innerHTML = `<p class="error">✗ Static import error: ${e.message}</p>`;
+      console.error('Static import error:', e);
+    }
+    
+    // React test
+    document.getElementById('load-react').addEventListener('click', async () => {
+      const reactRoot = document.getElementById('react-root');
+      reactRoot.innerHTML = 'Loading React...';
+      
+      try {
+        // Try to dynamically load React from CDN
+        const [React, ReactDOM] = await Promise.all([
+          import('https://esm.sh/react@18.3.1'),
+          import('https://esm.sh/react-dom@18.3.1/client')
+        ]);
+        
+        // Simple React component definition
+        const TestComponent = React.createElement('div', null, [
+          React.createElement('h3', { key: 'title' }, 'React is working!'),
+          React.createElement('p', { key: 'message' }, 'This component was rendered with React from a CDN.'),
+          React.createElement('p', { key: 'version' }, `React version: ${React.version}`)
+        ]);
+        
+        // Render the component
+        const root = ReactDOM.createRoot(reactRoot);
+        root.render(TestComponent);
+      } catch (error) {
+        reactRoot.innerHTML = `<p class="error">Failed to load or render React: ${error.message}</p>`;
+        console.error('React test error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

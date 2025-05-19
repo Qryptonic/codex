@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QStrike Error Check</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 { color: #333; }
+        #status { 
+            padding: 15px;
+            border-radius: 5px;
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            margin-bottom: 20px;
+        }
+        #errors {
+            padding: 15px;
+            border-radius: 5px;
+            background: #fff2f0;
+            border: 1px solid #ffccc7;
+            display: none;
+        }
+        button {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #096dd9;
+        }
+    </style>
+</head>
+<body>
+    <h1>QStrike Connection Check</h1>
+    
+    <div id="status">Checking Vite server connection...</div>
+    <div id="errors"></div>
+    
+    <button id="testBtn">Run Browser Tests</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusDiv = document.getElementById('status');
+            const errorsDiv = document.getElementById('errors');
+            const testBtn = document.getElementById('testBtn');
+            
+            // Test 1: Can we connect to the Vite server?
+            fetch('http://localhost:5173/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    statusDiv.style.background = '#f6ffed';
+                    statusDiv.style.border = '1px solid #b7eb8f';
+                    statusDiv.innerHTML = '✅ Successfully connected to Vite server at http://localhost:5173/';
+                    return response.text();
+                })
+                .catch(error => {
+                    statusDiv.style.background = '#fff2f0';
+                    statusDiv.style.border = '1px solid #ffccc7';
+                    statusDiv.innerHTML = `❌ Failed to connect to Vite server: ${error.message}`;
+                });
+            
+            // Test 2: Click button to run browser capability tests
+            testBtn.addEventListener('click', function() {
+                errorsDiv.style.display = 'block';
+                errorsDiv.innerHTML = '<h3>Browser Diagnostics:</h3>';
+                
+                // Test React and other required APIs
+                const tests = [
+                    { name: 'ES6 Support', test: () => {
+                        try {
+                            eval('const x = () => {}; class Test {}; new Promise(() => {});');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }},
+                    { name: 'Fetch API', test: () => typeof fetch === 'function' },
+                    { name: 'WebSocket API', test: () => typeof WebSocket === 'function' },
+                    { name: 'localStorage', test: () => {
+                        try {
+                            localStorage.setItem('test', 'test');
+                            localStorage.removeItem('test');
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }},
+                    { name: 'Modern DOM APIs', test: () => {
+                        return typeof document.querySelector === 'function' && 
+                               typeof document.createElement === 'function';
+                    }},
+                    { name: 'JSON Support', test: () => {
+                        try {
+                            JSON.parse('{"test": true}');
+                            JSON.stringify({test: true});
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                    }}
+                ];
+                
+                tests.forEach(({name, test}) => {
+                    try {
+                        const passed = test();
+                        errorsDiv.innerHTML += `<p>${passed ? '✅' : '❌'} ${name}: ${passed ? 'Supported' : 'Not supported'}</p>`;
+                    } catch (e) {
+                        errorsDiv.innerHTML += `<p>❌ ${name}: Error during test: ${e.message}</p>`;
+                    }
+                });
+                
+                // Browser information
+                errorsDiv.innerHTML += '<h3>Browser Information:</h3>';
+                errorsDiv.innerHTML += `<p>User Agent: ${navigator.userAgent}</p>`;
+                errorsDiv.innerHTML += `<p>Platform: ${navigator.platform}</p>`;
+                errorsDiv.innerHTML += `<p>Languages: ${navigator.languages?.join(', ') || navigator.language}</p>`;
+                
+                // Network diagnostics
+                errorsDiv.innerHTML += '<h3>Additional Checks:</h3>';
+                
+                // Check if we can ping a reliable external service
+                fetch('https://httpbin.org/get')
+                    .then(() => {
+                        errorsDiv.innerHTML += '<p>✅ External network connectivity: Working</p>';
+                    })
+                    .catch(error => {
+                        errorsDiv.innerHTML += `<p>❌ External network connectivity: ${error.message}</p>`;
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

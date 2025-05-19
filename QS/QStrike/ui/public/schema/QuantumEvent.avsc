@@ -1,0 +1,22 @@
+{
+  "namespace": "com.qstrike",
+  "protocol": "QE",
+  "type": "record",
+  "name": "QuantumEvent",
+  "fields": [
+    {"name": "jobId", "type": "string"},
+    {"name": "ts", "type": "long", "logicalType": "timestamp-millis"},
+    {"name": "algo", "type": {"type": "enum", "name": "Algo", "symbols": ["SHOR", "GROVER", "ECC"]}},
+    {"name": "provider", "type": {"type": "enum", "name": "Cloud", "symbols": ["IBM", "GOOGLE", "IONQ", "QUANTINUUM", "RIGETTI"]}},
+    {"name": "phase", "type": "string"},
+    {"name": "logicalQubits", "type": "int"},
+    {"name": "physicalQubits", "type": "int"},
+    {"name": "circuitDepth", "type": "int"},
+    {"name": "gateError", "type": "double"},
+    {"name": "fidelity", "type": "double"},
+    {"name": "progressPct", "type": "float"},
+    {"name": "etaSec", "type": "int"},
+    {"name": "pSuccess", "type": "float"},
+    {"name": "scaledEtaSec", "type": ["null", "int"], "default": null}
+  ]
+} 

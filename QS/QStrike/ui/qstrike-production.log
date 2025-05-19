@@ -1,0 +1,12 @@
+Loaded QStrike data from /Users/jason/Documents/QS/QStrike/ui/qstrike-enhanced-schema.json
+
+╔════════════════════════════════════════════════════════════════╗
+║ QStrike™ Production Dashboard running on port 3000            ║
+║ Open http://localhost:3000 in your browser to view the dashboard ║
+╚════════════════════════════════════════════════════════════════╝
+  
+Request received for: /
+Request received for: /
+Request received for: /api/data
+Request received for: /
+Request received for: /

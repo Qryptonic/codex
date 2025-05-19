@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="240" height="60" viewBox="0 0 240 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Quantum circuit styling for the Q -->
+  <g id="q-circuit">
+    <circle cx="30" cy="30" r="24" stroke="#22D3EE" stroke-width="2.5" stroke-opacity="0.8"/>
+    <circle cx="30" cy="30" r="18" stroke="#3B82F6" stroke-width="1.5" stroke-opacity="0.7"/>
+    <path d="M30 12 L30 48" stroke="#22D3EE" stroke-width="1.5" stroke-dasharray="2 2"/>
+    <path d="M12 30 L48 30" stroke="#22D3EE" stroke-width="1.5" stroke-dasharray="2 2"/>
+    
+    <path d="M20 20 Q20 40 30 40 L40 40 Q40 30 30 20 Z" fill="none" stroke="#22D3EE" stroke-width="2"/>
+    <circle cx="30" cy="40" r="2" fill="#22D3EE"/>
+    <circle cx="40" cy="30" r="2" fill="#3B82F6"/>
+  </g>
+  
+  <!-- Text elements -->
+  <g id="text" fill="#E1E1E1">
+    <text x="60" y="36" font-family="Arial, sans-serif" font-weight="700" font-size="24">QStrike</text>
+    <text x="160" y="27" font-family="Arial, sans-serif" font-weight="500" font-size="11">QUANTUM SECURITY</text>
+    <text x="160" y="40" font-family="Arial, sans-serif" font-weight="500" font-size="11">OPERATIONS</text>
+  </g>
+  
+  <!-- Strike through for the name -->
+  <path d="M60 40 L145 40" stroke="#22D3EE" stroke-width="1.5"/>
+  
+  <!-- Security shield icon -->
+  <g id="shield" transform="translate(200, 30)">
+    <path d="M10 2 L10 15 C10 15, 5 13, 0 15 L0 2 C0 2, 5 0, 10 2Z" fill="none" stroke="#3B82F6" stroke-width="1"/>
+    <path d="M5 5 L5 11 M3 7 L7 7" stroke="#3B82F6" stroke-width="1"/>
+  </g>
+  
+  <!-- Pulse effect -->
+  <path d="M175 52 Q180 48, 185 52, 190 48, 195 52, 200 48, 205 52, 210 48" stroke="#22D3EE" stroke-width="1" stroke-opacity="0.6"/>
+</svg>

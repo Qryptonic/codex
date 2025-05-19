@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>QStrike Favicon</title>
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="qsGradient">
+            <stop stop-color="#FF007F" offset="0%"></stop>
+            <stop stop-color="#8C46FF" offset="50%"></stop>
+            <stop stop-color="#00F6FF" offset="100%"></stop>
+        </linearGradient>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1" result="blur"></feGaussianBlur>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"></feComposite>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <rect fill="#080A17" x="0" y="0" width="32" height="32" rx="4"></rect>
+        <g transform="translate(4, 4)" filter="url(#glow)">
+            <!-- Quantum symbol -->
+            <circle cx="12" cy="12" r="10" stroke="url(#qsGradient)" stroke-width="1.5" fill-opacity="0.15" fill="url(#qsGradient)"></circle>
+            <path d="M12,2 C12,12 22,12 22,12" stroke="url(#qsGradient)" stroke-width="1.5" stroke-linecap="round"></path>
+            <path d="M12,22 C12,12 2,12 2,12" stroke="url(#qsGradient)" stroke-width="1.5" stroke-linecap="round"></path>
+            <circle cx="12" cy="12" r="3" fill="url(#qsGradient)"></circle>
+            <!-- Q letter -->
+            <path d="M16,16 L19,19" stroke="url(#qsGradient)" stroke-width="2" stroke-linecap="round"></path>
+        </g>
+    </g>
+</svg>

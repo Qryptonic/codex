@@ -1,0 +1,22 @@
+Loaded sample data from /Users/jason/Documents/QS/QStrike/ui/sample-data.json
+
+╔════════════════════════════════════════════════════════════════╗
+║ QStrike Enhanced Dashboard Server running on port 3001           ║
+║ Open http://localhost:3001 in your browser to view the dashboard ║
+╚════════════════════════════════════════════════════════════════╝
+  
+Request received for: /
+Request received for: /
+Request received for: /api/data
+Request received for: /api/stream
+Request received for: /favicon.ico
+Request received for: /api/data
+Request received for: /
+SSE connection closed
+Request received for: /api/data
+Request received for: /api/stream
+Request received for: /
+SSE connection closed
+Request received for: /api/data
+Request received for: /api/stream
+SSE connection closed

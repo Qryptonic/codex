@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QStrike Dashboard (Standalone)</title>
+    <style>
+        /* Basic styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121218;
+            color: #eaeaea;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #1a1a24;
+            padding: 1rem;
+            border-bottom: 1px solid #2a2a35;
+        }
+        header h1 {
+            margin: 0;
+            text-align: center;
+            color: #9580ff;
+            text-shadow: 0 0 10px rgba(149, 128, 255, 0.5);
+        }
+        main {
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        footer {
+            background-color: #1a1a24;
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid #2a2a35;
+            font-size: 0.9rem;
+            color: #9999aa;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            background-color: #1a1a24;
+            border: 1px solid #2a2a35;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: #ff80bf;
+            text-shadow: 0 0 10px rgba(255, 128, 191, 0.5);
+        }
+        .provider-card {
+            background-color: #1a1a24;
+            border: 1px solid #2a2a35;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .provider-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #80ffea;
+        }
+        .progress-container {
+            margin: 1rem 0;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #2a2a35;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        .progress-fill.ibm {
+            background-color: #0f62fe;
+        }
+        .progress-fill.google {
+            background-color: #ea4335;
+        }
+        .progress-fill.ionq {
+            background-color: #8e44ad;
+        }
+        .progress-fill.quantinuum {
+            background-color: #2ecc71;
+        }
+        .progress-fill.rigetti {
+            background-color: #f39c12;
+        }
+        .button {
+            display: block;
+            margin: 2rem auto;
+            padding: 0.75rem 1.5rem;
+            background-color: #ff80bf;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 128, 191, 0.3);
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            background-color: #ff99c8;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 128, 191, 0.5);
+        }
+        .digital-clock {
+            font-family: monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #80ffea;
+        }
+        .algo-stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .stat {
+            background-color: #242433;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .container {
+            margin-top: 2rem;
+        }
+        #status-bar {
+            background-color: rgba(26, 26, 36, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-indicator.connected {
+            background-color: #2ecc71;
+        }
+        .status-indicator.disconnected {
+            background-color: #e74c3c;
+        }
+        .chart-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: #242433;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9999aa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>QStrike Quantum Dashboard</h1>
+    </header>
+    
+    <main>
+        <div id="status-bar">
+            <div>
+                <span class="status-indicator connected"></span>
+                Status: <span id="connection-status">Connected</span>
+                <span id="job-info">(Demo Mode)</span>
+            </div>
+            <div id="digital-clock" class="digital-clock"></div>
+        </div>
+
+        <div class="container">
+            <button id="demo-button" class="button">Run Simulation</button>
+            
+            <div id="dashboard" class="dashboard" style="display: none;">
+                <!-- Provider Cards Column -->
+                <div class="card">
+                    <h2>Quantum Providers</h2>
+                    <div id="providers-container"></div>
+                </div>
+                
+                <!-- Main Visualizations Column -->
+                <div>
+                    <div class="card">
+                        <h2>Shor's Algorithm</h2>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Order Finding</span>
+                                <span id="shor-order-value">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="shor-order-progress" class="progress-fill ibm" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>CRT Merge</span>
+                                <span id="shor-merge-value">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="shor-merge-progress" class="progress-fill google" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">Shor Pipeline Visualization</div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Grover's Algorithm</h2>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Iteration Progress</span>
+                                <span id="grover-value">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="grover-progress" class="progress-fill ionq" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">Grover Spiral Visualization</div>
+                    </div>
+                </div>
+                
+                <!-- Right Column (Controls, Stats) -->
+                <div>
+                    <div class="card">
+                        <h2>Success Projection</h2>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>P(Success)</span>
+                                <span id="success-value">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="success-progress" class="progress-fill quantinuum" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <p>Scaled ETA (2028): <span id="scaled-eta">0</span>s</p>
+                        <div class="chart-placeholder">Success Thermometer</div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>Provider Matrix</h2>
+                        <div class="chart-placeholder">Heat Matrix Visualization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>QStrike Quantum Dashboard - Standalone Demo</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize digital clock
+            function updateClock() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                document.getElementById('digital-clock').textContent = `${hours}:${minutes}:${seconds}`;
+            }
+            
+            setInterval(updateClock, 1000);
+            updateClock();
+            
+            // Demo button functionality
+            const demoButton = document.getElementById('demo-button');
+            const dashboard = document.getElementById('dashboard');
+            let simulationRunning = false;
+            let simulationInterval = null;
+            
+            demoButton.addEventListener('click', function() {
+                if (simulationRunning) {
+                    // Reset simulation
+                    clearInterval(simulationInterval);
+                    resetSimulation();
+                    demoButton.textContent = 'Run Simulation';
+                    simulationRunning = false;
+                } else {
+                    // Start simulation
+                    dashboard.style.display = 'grid';
+                    demoButton.textContent = 'Reset Simulation';
+                    simulationRunning = true;
+                    
+                    // Generate provider cards
+                    generateProviders();
+                    
+                    // Start simulation
+                    let progress = 0;
+                    simulationInterval = setInterval(() => {
+                        progress += 1;
+                        updateSimulation(progress);
+                        
+                        if (progress >= 100) {
+                            clearInterval(simulationInterval);
+                        }
+                    }, 300);
+                }
+            });
+            
+            function resetSimulation() {
+                // Reset all progress bars
+                document.getElementById('shor-order-progress').style.width = '0%';
+                document.getElementById('shor-order-value').textContent = '0%';
+                document.getElementById('shor-merge-progress').style.width = '0%';
+                document.getElementById('shor-merge-value').textContent = '0%';
+                document.getElementById('grover-progress').style.width = '0%';
+                document.getElementById('grover-value').textContent = '0%';
+                document.getElementById('success-progress').style.width = '0%';
+                document.getElementById('success-value').textContent = '0%';
+                document.getElementById('scaled-eta').textContent = '0';
+                
+                // Clear provider cards
+                document.getElementById('providers-container').innerHTML = '';
+            }
+            
+            function generateProviders() {
+                const providersContainer = document.getElementById('providers-container');
+                providersContainer.innerHTML = '';
+                
+                const providers = [
+                    { name: 'IBM', class: 'ibm', algo: 'SHOR', qubits: getRandomInt(100, 150) },
+                    { name: 'Google', class: 'google', algo: 'SHOR', qubits: getRandomInt(120, 160) },
+                    { name: 'IONQ', class: 'ionq', algo: 'GROVER', qubits: getRandomInt(80, 110) },
+                    { name: 'Quantinuum', class: 'quantinuum', algo: 'ECC', qubits: getRandomInt(90, 130) },
+                    { name: 'Rigetti', class: 'rigetti', algo: 'GROVER', qubits: getRandomInt(70, 100) }
+                ];
+                
+                providers.forEach(provider => {
+                    const card = document.createElement('div');
+                    card.className = 'provider-card';
+                    card.innerHTML = `
+                        <h3>${provider.name}</h3>
+                        <div class="algo-stats">
+                            <span class="stat">Algo: ${provider.algo}</span>
+                            <span class="stat">Qubits: ${provider.qubits}</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span id="${provider.name.toLowerCase()}-value">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="${provider.name.toLowerCase()}-progress" class="progress-fill ${provider.class}" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    `;
+                    providersContainer.appendChild(card);
+                });
+            }
+            
+            function updateSimulation(progress) {
+                // Update provider progress
+                const providers = ['ibm', 'google', 'ionq', 'quantinuum', 'rigetti'];
+                providers.forEach(provider => {
+                    const randomProgress = Math.min(100, getRandomInt(progress - 10, progress + 10));
+                    document.getElementById(`${provider}-progress`).style.width = `${randomProgress}%`;
+                    document.getElementById(`${provider}-value`).textContent = `${randomProgress}%`;
+                });
+                
+                // Update Shor progress
+                const shorOrderValue = Math.min(100, Math.floor(progress * 1.2));
+                document.getElementById('shor-order-progress').style.width = `${shorOrderValue}%`;
+                document.getElementById('shor-order-value').textContent = `${shorOrderValue}%`;
+                
+                if (progress > 50) {
+                    const shorMergeValue = Math.min(100, Math.floor((progress - 50) * 2));
+                    document.getElementById('shor-merge-progress').style.width = `${shorMergeValue}%`;
+                    document.getElementById('shor-merge-value').textContent = `${shorMergeValue}%`;
+                }
+                
+                // Update Grover progress
+                const groverValue = Math.min(100, Math.floor(progress * 0.9));
+                document.getElementById('grover-progress').style.width = `${groverValue}%`;
+                document.getElementById('grover-value').textContent = `${groverValue}%`;
+                
+                // Update Success
+                const successValue = Math.min(100, Math.floor(progress * 0.8));
+                document.getElementById('success-progress').style.width = `${successValue}%`;
+                document.getElementById('success-value').textContent = `${successValue}%`;
+                
+                // Update Scaled ETA
+                document.getElementById('scaled-eta').textContent = Math.max(1, 500 - Math.floor(progress * 5));
+            }
+            
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+        });
+    </script>
+</body>
+</html>

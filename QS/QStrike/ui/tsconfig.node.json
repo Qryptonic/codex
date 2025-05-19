@@ -1,0 +1,4 @@
+{ "extends": "./tsconfig.json",
+  "compilerOptions": { "module": "CommonJS", "types": ["node"] },
+  "include": ["vite.config.ts", "vitest.config.ts"]
+}

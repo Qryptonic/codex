@@ -1,0 +1,1290 @@
+{
+  "schema_version": "5.1.2",
+  "specification": "QStrike™ Dashboard Data Schema",
+  "last_updated": "2025-04-30",
+  
+  "qryai_orchestrator": {
+    "heartbeat_interval_ms": 15000,
+    "telemetry_timestamp": "2025-05-01T12:34:56Z",
+    "pareto_frontier": {
+      "optimization_goals": ["wall_clock", "success_prob", "cost_efficiency"],
+      "last_refresh": "2025-05-01T12:30:00Z"
+    },
+    "providers": [
+      {
+        "id": "AWS_BRAKET_RIGETTI",
+        "display_name": "AWS Braket (Rigetti)",
+        "qubits": {
+          "physical": 84,
+          "logical": 16,
+          "surface_code_ratio": 5.1
+        },
+        "metrics": {
+          "gate_err_2q": 0.00092,
+          "t1_time_us": 120,
+          "t2_time_us": 85,
+          "queue_depth": 12,
+          "cost_per_second": 0.45,
+          "round_trip_latency_ms": 350,
+          "historic_success_stdev": 0.05
+        },
+        "error_correction": {
+          "scheme": "surface_code",
+          "logical_error_rate": 0.0021
+        },
+        "allocated_shards": 3,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T10:15:00Z",
+          "drift_percentage": 0.8,
+          "next_calibration": "2025-05-01T22:15:00Z"
+        }
+      },
+      {
+        "id": "AWS_BRAKET_IONQ",
+        "display_name": "AWS Braket (IonQ)",
+        "qubits": {
+          "physical": 36,
+          "logical": 7,
+          "surface_code_ratio": "N/A"
+        },
+        "metrics": {
+          "gate_err_2q": 0.00052,
+          "t1_time_us": 250,
+          "t2_time_us": 180,
+          "queue_depth": 6,
+          "cost_per_second": 0.82,
+          "round_trip_latency_ms": 420,
+          "historic_success_stdev": 0.03
+        },
+        "error_correction": {
+          "scheme": "repetition_mid_circuit_reset",
+          "logical_error_rate": 0.0018
+        },
+        "allocated_shards": 2,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T08:45:00Z",
+          "drift_percentage": 0.3,
+          "next_calibration": "2025-05-01T20:45:00Z"
+        }
+      },
+      {
+        "id": "GOOGLE_WILLOW",
+        "display_name": "Google Willow",
+        "qubits": {
+          "physical": 98,
+          "logical": 19,
+          "surface_code_ratio": 5.0
+        },
+        "metrics": {
+          "gate_err_2q": 0.00078,
+          "t1_time_us": 175,
+          "t2_time_us": 120,
+          "queue_depth": 8,
+          "cost_per_second": 0.68,
+          "round_trip_latency_ms": 300,
+          "historic_success_stdev": 0.04
+        },
+        "error_correction": {
+          "scheme": "xzzx_rotated_surface",
+          "logical_error_rate": 0.0015
+        },
+        "allocated_shards": 5,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T11:30:00Z",
+          "drift_percentage": 0.5,
+          "next_calibration": "2025-05-01T23:30:00Z"
+        }
+      },
+      {
+        "id": "IBM_QUANTUM",
+        "display_name": "IBM Quantum",
+        "qubits": {
+          "physical": 127,
+          "logical": 24,
+          "surface_code_ratio": 5.2
+        },
+        "metrics": {
+          "gate_err_2q": 0.00102,
+          "t1_time_us": 115,
+          "t2_time_us": 75,
+          "queue_depth": 15,
+          "cost_per_second": 0.39,
+          "round_trip_latency_ms": 280,
+          "historic_success_stdev": 0.06
+        },
+        "error_correction": {
+          "scheme": "surface_code",
+          "logical_error_rate": 0.0025
+        },
+        "allocated_shards": 4,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T09:00:00Z",
+          "drift_percentage": 1.2,
+          "next_calibration": "2025-05-01T21:00:00Z"
+        }
+      },
+      {
+        "id": "QUANTINUUM_H2_1",
+        "display_name": "Quantinuum H2-1",
+        "qubits": {
+          "physical": 32,
+          "logical": 6,
+          "surface_code_ratio": "N/A"
+        },
+        "metrics": {
+          "gate_err_2q": 0.00091,
+          "t1_time_us": 280,
+          "t2_time_us": 200,
+          "queue_depth": 4,
+          "cost_per_second": 1.20,
+          "round_trip_latency_ms": 400,
+          "historic_success_stdev": 0.02
+        },
+        "error_correction": {
+          "scheme": "repetition_mid_circuit_reset",
+          "logical_error_rate": 0.0016
+        },
+        "allocated_shards": 2,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T12:15:00Z",
+          "drift_percentage": 0.4,
+          "next_calibration": "2025-05-02T00:15:00Z"
+        }
+      },
+      {
+        "id": "PASQAL_NEUTRAL_ATOM",
+        "display_name": "Pasqal Neutral Atom",
+        "qubits": {
+          "physical": 100,
+          "logical": 19,
+          "surface_code_ratio": 5.1
+        },
+        "metrics": {
+          "gate_err_2q": 0.00195,
+          "t1_time_us": 90,
+          "t2_time_us": 65,
+          "queue_depth": 3,
+          "cost_per_second": 0.56,
+          "round_trip_latency_ms": 500,
+          "historic_success_stdev": 0.08
+        },
+        "error_correction": {
+          "scheme": "surface_code",
+          "logical_error_rate": 0.0030
+        },
+        "allocated_shards": 1,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T11:00:00Z",
+          "drift_percentage": 1.8,
+          "next_calibration": "2025-05-01T23:00:00Z"
+        }
+      },
+      {
+        "id": "QUERA_ANALOG",
+        "display_name": "QuEra Analog",
+        "qubits": {
+          "physical": 256,
+          "logical": 51,
+          "surface_code_ratio": 5.0
+        },
+        "metrics": {
+          "gate_err_2q": 0.00145,
+          "t1_time_us": 105,
+          "t2_time_us": 70,
+          "queue_depth": 6,
+          "cost_per_second": 0.72,
+          "round_trip_latency_ms": 450,
+          "historic_success_stdev": 0.07
+        },
+        "error_correction": {
+          "scheme": "surface_code",
+          "logical_error_rate": 0.0028
+        },
+        "allocated_shards": 1,
+        "status": "active",
+        "calibration": {
+          "last_calibrated": "2025-05-01T10:30:00Z",
+          "drift_percentage": 1.5,
+          "next_calibration": "2025-05-01T22:30:00Z"
+        }
+      }
+    ],
+    "active_rerouting": [
+      {
+        "shard_id": "rsa2048_shard_09",
+        "from_provider": "PASQAL_NEUTRAL_ATOM",
+        "to_provider": "GOOGLE_WILLOW",
+        "reason": "calibration_drift",
+        "timestamp": "2025-05-01T12:25:15Z",
+        "estimated_delay_sec": 45
+      }
+    ]
+  },
+  
+  "cryptanalytic_workloads": {
+    "job_id": "QS-RSA2048-20250501-003",
+    "session_start": "2025-05-01T08:00:00Z",
+    "elapsed_time_sec": 18000,
+    "total_estimated_time_sec": 43200,
+    "overall_progress": 0.42,
+    "workload_groups": [
+      {
+        "id": "rsa2048_factoring",
+        "algorithm": "shor",
+        "target": "RSA2048",
+        "total_shards": 12,
+        "active_shards": 9,
+        "completed_shards": 3,
+        "progress": 0.38,
+        "eta_sec": 27000,
+        "success_probability": 0.86,
+        "confidence_interval": [0.82, 0.91],
+        "shards": [
+          {
+            "shard_id": "rsa2048_shard_01",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 18,
+            "circuit_depth": 952,
+            "status": "completed",
+            "progress": 1.0,
+            "result_hash": "9a3e7d6c1f",
+            "cross_validated": true,
+            "wall_clock_time_sec": 4215,
+            "cost_usd": 118.45
+          },
+          {
+            "shard_id": "rsa2048_shard_02",
+            "provider": "IBM_QUANTUM",
+            "logical_qubits": 20,
+            "circuit_depth": 978,
+            "status": "completed",
+            "progress": 1.0,
+            "result_hash": "2b8f9d4a3c",
+            "cross_validated": true,
+            "wall_clock_time_sec": 4580,
+            "cost_usd": 125.80
+          },
+          {
+            "shard_id": "rsa2048_shard_03",
+            "provider": "QUANTINUUM_H2_1",
+            "logical_qubits": 6,
+            "circuit_depth": 412,
+            "status": "completed",
+            "progress": 1.0,
+            "result_hash": "7d5e9f1a2b",
+            "cross_validated": true,
+            "wall_clock_time_sec": 3850,
+            "cost_usd": 245.35
+          },
+          {
+            "shard_id": "rsa2048_shard_04",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 19,
+            "circuit_depth": 968,
+            "status": "running",
+            "progress": 0.72,
+            "phase_estimation_rounds_completed": 720,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 1450,
+            "cost_usd_current": 78.90
+          },
+          {
+            "shard_id": "rsa2048_shard_05",
+            "provider": "AWS_BRAKET_RIGETTI",
+            "logical_qubits": 16,
+            "circuit_depth": 924,
+            "status": "running",
+            "progress": 0.65,
+            "phase_estimation_rounds_completed": 650,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 1820,
+            "cost_usd_current": 65.25
+          },
+          {
+            "shard_id": "rsa2048_shard_06",
+            "provider": "IBM_QUANTUM",
+            "logical_qubits": 22,
+            "circuit_depth": 986,
+            "status": "running",
+            "progress": 0.58,
+            "phase_estimation_rounds_completed": 580,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 2180,
+            "cost_usd_current": 54.30
+          },
+          {
+            "shard_id": "rsa2048_shard_07",
+            "provider": "AWS_BRAKET_IONQ",
+            "logical_qubits": 7,
+            "circuit_depth": 450,
+            "status": "running",
+            "progress": 0.52,
+            "phase_estimation_rounds_completed": 520,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 2540,
+            "cost_usd_current": 102.50
+          },
+          {
+            "shard_id": "rsa2048_shard_08",
+            "provider": "QUANTINUUM_H2_1",
+            "logical_qubits": 6,
+            "circuit_depth": 408,
+            "status": "running",
+            "progress": 0.45,
+            "phase_estimation_rounds_completed": 450,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 2940,
+            "cost_usd_current": 129.60
+          },
+          {
+            "shard_id": "rsa2048_shard_09",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 18,
+            "circuit_depth": 948,
+            "status": "running",
+            "progress": 0.35,
+            "phase_estimation_rounds_completed": 350,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3480,
+            "cost_usd_current": 45.20,
+            "rerouted_from": "PASQAL_NEUTRAL_ATOM",
+            "reroute_time": "2025-05-01T12:25:15Z"
+          },
+          {
+            "shard_id": "rsa2048_shard_10",
+            "provider": "AWS_BRAKET_RIGETTI",
+            "logical_qubits": 16,
+            "circuit_depth": 918,
+            "status": "running",
+            "progress": 0.28,
+            "phase_estimation_rounds_completed": 280,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3820,
+            "cost_usd_current": 28.35
+          },
+          {
+            "shard_id": "rsa2048_shard_11",
+            "provider": "IBM_QUANTUM",
+            "logical_qubits": 21,
+            "circuit_depth": 974,
+            "status": "running",
+            "progress": 0.15,
+            "phase_estimation_rounds_completed": 150,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 4520,
+            "cost_usd_current": 14.10
+          },
+          {
+            "shard_id": "rsa2048_shard_12",
+            "provider": "AWS_BRAKET_IONQ",
+            "logical_qubits": 7,
+            "circuit_depth": 446,
+            "status": "running",
+            "progress": 0.04,
+            "phase_estimation_rounds_completed": 40,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 5080,
+            "cost_usd_current": 7.85
+          }
+        ]
+      },
+      {
+        "id": "eccp256_discrete_log",
+        "algorithm": "shor_dlog",
+        "target": "ECCP256",
+        "total_shards": 8,
+        "active_shards": 8,
+        "completed_shards": 0,
+        "progress": 0.15,
+        "eta_sec": 29520,
+        "success_probability": 0.79,
+        "confidence_interval": [0.73, 0.84],
+        "shards": [
+          {
+            "shard_id": "eccp256_shard_01",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 16,
+            "circuit_depth": 882,
+            "status": "running",
+            "progress": 0.28,
+            "phase_estimation_rounds_completed": 280,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3120,
+            "cost_usd_current": 42.15
+          },
+          {
+            "shard_id": "eccp256_shard_02",
+            "provider": "IBM_QUANTUM",
+            "logical_qubits": 18,
+            "circuit_depth": 910,
+            "status": "running",
+            "progress": 0.25,
+            "phase_estimation_rounds_completed": 250,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3350,
+            "cost_usd_current": 35.80
+          },
+          {
+            "shard_id": "eccp256_shard_03",
+            "provider": "QUANTINUUM_H2_1",
+            "logical_qubits": 6,
+            "circuit_depth": 395,
+            "status": "running",
+            "progress": 0.22,
+            "phase_estimation_rounds_completed": 220,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3540,
+            "cost_usd_current": 63.25
+          },
+          {
+            "shard_id": "eccp256_shard_04",
+            "provider": "AWS_BRAKET_RIGETTI",
+            "logical_qubits": 15,
+            "circuit_depth": 855,
+            "status": "running",
+            "progress": 0.19,
+            "phase_estimation_rounds_completed": 190,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3680,
+            "cost_usd_current": 19.85
+          },
+          {
+            "shard_id": "eccp256_shard_05",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 17,
+            "circuit_depth": 895,
+            "status": "running",
+            "progress": 0.16,
+            "phase_estimation_rounds_completed": 160,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 3850,
+            "cost_usd_current": 24.30
+          },
+          {
+            "shard_id": "eccp256_shard_06",
+            "provider": "IBM_QUANTUM",
+            "logical_qubits": 19,
+            "circuit_depth": 925,
+            "status": "running",
+            "progress": 0.09,
+            "phase_estimation_rounds_completed": 90,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 4250,
+            "cost_usd_current": 8.40
+          },
+          {
+            "shard_id": "eccp256_shard_07",
+            "provider": "AWS_BRAKET_IONQ",
+            "logical_qubits": 6,
+            "circuit_depth": 410,
+            "status": "running",
+            "progress": 0.06,
+            "phase_estimation_rounds_completed": 60,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 4420,
+            "cost_usd_current": 12.15
+          },
+          {
+            "shard_id": "eccp256_shard_08",
+            "provider": "AWS_BRAKET_RIGETTI",
+            "logical_qubits": 14,
+            "circuit_depth": 840,
+            "status": "running",
+            "progress": 0.03,
+            "phase_estimation_rounds_completed": 30,
+            "phase_estimation_rounds_total": 1000,
+            "eta_sec": 4580,
+            "cost_usd_current": 3.10
+          }
+        ]
+      },
+      {
+        "id": "aes128_key_search",
+        "algorithm": "grover",
+        "target": "AES128",
+        "total_shards": 4,
+        "active_shards": 0,
+        "completed_shards": 4,
+        "progress": 1.0,
+        "eta_sec": 0,
+        "success_probability": 0.91,
+        "confidence_interval": [0.88, 0.94],
+        "shards": [
+          {
+            "shard_id": "aes128_shard_01",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 16,
+            "circuit_depth": 740,
+            "status": "completed",
+            "progress": 1.0,
+            "grover_iterations_completed": 4294967296,
+            "grover_iterations_total": 4294967296,
+            "result_hash": "5c8e1d9f2a",
+            "cross_validated": true,
+            "wall_clock_time_sec": 3850,
+            "cost_usd": 108.25
+          },
+          {
+            "shard_id": "aes128_shard_02",
+            "provider": "IBM_QUANTUM",
+            "logical_qubits": 18,
+            "circuit_depth": 765,
+            "status": "completed",
+            "progress": 1.0,
+            "grover_iterations_completed": 4294967296,
+            "grover_iterations_total": 4294967296,
+            "result_hash": "7d9e3f1a2b",
+            "cross_validated": true,
+            "wall_clock_time_sec": 4120,
+            "cost_usd": 95.60
+          },
+          {
+            "shard_id": "aes128_shard_03",
+            "provider": "AWS_BRAKET_RIGETTI",
+            "logical_qubits": 14,
+            "circuit_depth": 725,
+            "status": "completed",
+            "progress": 1.0,
+            "grover_iterations_completed": 4294967296,
+            "grover_iterations_total": 4294967296,
+            "result_hash": "3c8f1a2e7d",
+            "cross_validated": true,
+            "wall_clock_time_sec": 3980,
+            "cost_usd": 89.15
+          },
+          {
+            "shard_id": "aes128_shard_04",
+            "provider": "QUANTINUUM_H2_1",
+            "logical_qubits": 6,
+            "circuit_depth": 365,
+            "status": "completed",
+            "progress": 1.0,
+            "grover_iterations_completed": 4294967296,
+            "grover_iterations_total": 4294967296,
+            "result_hash": "9a2e7d1f5c",
+            "cross_validated": true,
+            "wall_clock_time_sec": 3540,
+            "cost_usd": 212.40
+          }
+        ]
+      },
+      {
+        "id": "md5_collision",
+        "algorithm": "grover",
+        "target": "MD5",
+        "total_shards": 2,
+        "active_shards": 0,
+        "completed_shards": 2,
+        "progress": 1.0,
+        "eta_sec": 0,
+        "success_probability": 0.95,
+        "confidence_interval": [0.92, 0.98],
+        "shards": [
+          {
+            "shard_id": "md5_shard_01",
+            "provider": "AWS_BRAKET_IONQ",
+            "logical_qubits": 6,
+            "circuit_depth": 325,
+            "status": "completed",
+            "progress": 1.0,
+            "grover_iterations_completed": 1073741824,
+            "grover_iterations_total": 1073741824,
+            "result_hash": "1f9a3e7d2b",
+            "cross_validated": true,
+            "wall_clock_time_sec": 2750,
+            "cost_usd": 112.75
+          },
+          {
+            "shard_id": "md5_shard_02",
+            "provider": "GOOGLE_WILLOW",
+            "logical_qubits": 15,
+            "circuit_depth": 650,
+            "status": "completed",
+            "progress": 1.0,
+            "grover_iterations_completed": 1073741824,
+            "grover_iterations_total": 1073741824,
+            "result_hash": "8c4f2a9e1d",
+            "cross_validated": true,
+            "wall_clock_time_sec": 2850,
+            "cost_usd": 78.35
+          }
+        ]
+      }
+    ]
+  },
+  
+  "cross_validation": {
+    "last_updated": "2025-05-01T12:33:45Z",
+    "validation_policy": "all_shards_double_validated",
+    "primary_validation_providers": ["GOOGLE_WILLOW", "IBM_QUANTUM"],
+    "secondary_validation_providers": ["QUANTINUUM_H2_1", "AWS_BRAKET_IONQ"],
+    "tertiary_validation_providers": ["AWS_BRAKET_RIGETTI", "PASQAL_NEUTRAL_ATOM"],
+    "chi_square_threshold": 0.05,
+    "confidence_interval_target": 0.99,
+    "validation_matrices": [
+      {
+        "algorithm": "shor",
+        "matrix": [
+          {
+            "primary_provider": "GOOGLE_WILLOW",
+            "secondary_provider": "QUANTINUUM_H2_1",
+            "chi_square_p_value": 0.042,
+            "confidence_overlap_pct": 98.7,
+            "status": "pass"
+          },
+          {
+            "primary_provider": "IBM_QUANTUM",
+            "secondary_provider": "AWS_BRAKET_IONQ",
+            "chi_square_p_value": 0.038,
+            "confidence_overlap_pct": 97.9,
+            "status": "pass"
+          },
+          {
+            "primary_provider": "AWS_BRAKET_RIGETTI",
+            "secondary_provider": "GOOGLE_WILLOW",
+            "chi_square_p_value": 0.028,
+            "confidence_overlap_pct": 96.5,
+            "status": "pass"
+          }
+        ],
+        "fault_events": [
+          {
+            "timestamp": "2025-05-01T11:42:15Z",
+            "primary_provider": "PASQAL_NEUTRAL_ATOM",
+            "secondary_provider": "QUANTINUUM_H2_1",
+            "chi_square_p_value": 0.012,
+            "confidence_overlap_pct": 85.3,
+            "status": "fail",
+            "resolution": "tertiary_validation_requested",
+            "tertiary_provider": "GOOGLE_WILLOW",
+            "tertiary_chi_square_p_value": 0.043,
+            "tertiary_confidence_overlap_pct": 97.8,
+            "final_status": "resolved_with_tertiary"
+          }
+        ]
+      },
+      {
+        "algorithm": "grover",
+        "matrix": [
+          {
+            "primary_provider": "GOOGLE_WILLOW",
+            "secondary_provider": "IBM_QUANTUM",
+            "chi_square_p_value": 0.048,
+            "confidence_overlap_pct": 99.2,
+            "status": "pass"
+          },
+          {
+            "primary_provider": "AWS_BRAKET_RIGETTI",
+            "secondary_provider": "QUANTINUUM_H2_1",
+            "chi_square_p_value": 0.041,
+            "confidence_overlap_pct": 98.5,
+            "status": "pass"
+          },
+          {
+            "primary_provider": "AWS_BRAKET_IONQ",
+            "secondary_provider": "GOOGLE_WILLOW",
+            "chi_square_p_value": 0.046,
+            "confidence_overlap_pct": 98.9,
+            "status": "pass"
+          }
+        ],
+        "fault_events": []
+      }
+    ]
+  },
+  
+  "error_correction": {
+    "schemes": [
+      {
+        "name": "surface_code",
+        "physical_to_logical_ratio": 5.1,
+        "providers": ["IBM_QUANTUM", "AWS_BRAKET_RIGETTI", "GOOGLE_WILLOW", "PASQAL_NEUTRAL_ATOM", "QUERA_ANALOG"],
+        "logical_error_rate_range": [0.0015, 0.0030],
+        "circuit_depth_overhead": 1.85,
+        "wall_clock_overhead": 2.1
+      },
+      {
+        "name": "xzzx_rotated_surface",
+        "physical_to_logical_ratio": 5.0,
+        "providers": ["GOOGLE_WILLOW"],
+        "logical_error_rate_range": [0.0014, 0.0022],
+        "circuit_depth_overhead": 1.75,
+        "wall_clock_overhead": 1.95,
+        "correlated_z_error_resistance": true
+      },
+      {
+        "name": "repetition_mid_circuit_reset",
+        "physical_to_logical_ratio": "N/A",
+        "providers": ["AWS_BRAKET_IONQ", "QUANTINUUM_H2_1"],
+        "logical_error_rate_range": [0.0016, 0.0025],
+        "circuit_depth_overhead": 1.50,
+        "wall_clock_overhead": 1.65
+      },
+      {
+        "name": "bosonic_cat_codes",
+        "physical_to_logical_ratio": 3.2,
+        "providers": ["AWS_OCELOT_PROTOTYPE"],
+        "logical_error_rate_range": [0.0018, 0.0028],
+        "circuit_depth_overhead": 1.80,
+        "wall_clock_overhead": 2.05,
+        "status": "prototype"
+      }
+    ],
+    "zero_noise_extrapolation": {
+      "enabled": true,
+      "model": "linear_two_point",
+      "scaling_factors": [1.0, 1.5],
+      "providers_using_zne": ["IBM_QUANTUM", "AWS_BRAKET_RIGETTI", "PASQAL_NEUTRAL_ATOM", "QUERA_ANALOG"]
+    },
+    "error_mitigation": {
+      "enabled": true,
+      "probability_error_cancellation": {
+        "enabled": true,
+        "providers": ["GOOGLE_WILLOW"]
+      },
+      "dynamical_decoupling": {
+        "enabled": true,
+        "providers": ["AWS_BRAKET_IONQ", "QUANTINUUM_H2_1"]
+      }
+    }
+  },
+  
+  "hpc_merger": {
+    "status": "active",
+    "resources": {
+      "cpu_nodes": 12,
+      "gpu_nodes": 7,
+      "total_ram_gb": 1228,
+      "total_gpu_vram_gb": 336,
+      "network_bandwidth_gbps": 200,
+      "utilization": {
+        "cpu_pct": 78,
+        "ram_pct": 85,
+        "gpu_pct": 92,
+        "network_egress_gbps": 15.4
+      }
+    },
+    "merge_operations": [
+      {
+        "job_id": "merge_rsa2048_partial_factors",
+        "source_shards": ["rsa2048_shard_01", "rsa2048_shard_02", "rsa2048_shard_03"],
+        "status": "completed",
+        "result_hash": "3f8a7c2e9d1b",
+        "verification_status": "confirmed",
+        "wall_clock_time_sec": 245
+      },
+      {
+        "job_id": "merge_aes128_key_candidates",
+        "source_shards": ["aes128_shard_01", "aes128_shard_02", "aes128_shard_03", "aes128_shard_04"],
+        "status": "completed",
+        "result_hash": "8c1a3f7e2d9b",
+        "verification_status": "confirmed",
+        "wall_clock_time_sec": 185
+      },
+      {
+        "job_id": "merge_md5_collision_candidates",
+        "source_shards": ["md5_shard_01", "md5_shard_02"],
+        "status": "completed",
+        "result_hash": "5e9a2c7f1d3b",
+        "verification_status": "confirmed",
+        "wall_clock_time_sec": 95
+      }
+    ],
+    "zero_noise_extrapolation": {
+      "jobs": [
+        {
+          "shard_id": "rsa2048_shard_04",
+          "status": "active",
+          "noise_scaling_points": [
+            {"scale": 1.0, "success_prob": 0.832},
+            {"scale": 1.5, "success_prob": 0.755}
+          ],
+          "extrapolated_zero_noise_prob": 0.913,
+          "residual_error": 0.018
+        },
+        {
+          "shard_id": "rsa2048_shard_05",
+          "status": "active",
+          "noise_scaling_points": [
+            {"scale": 1.0, "success_prob": 0.828},
+            {"scale": 1.5, "success_prob": 0.749}
+          ],
+          "extrapolated_zero_noise_prob": 0.908,
+          "residual_error": 0.021
+        }
+      ]
+    }
+  },
+  
+  "cryptanalytic_results": {
+    "time_to_break": {
+      "rsa2048": {
+        "status": "in_progress",
+        "estimated_total_time_h": 12.0,
+        "elapsed_time_h": 5.0,
+        "remaining_time_h": 7.0,
+        "success_probability": 0.86,
+        "confidence_interval": [0.82, 0.91]
+      },
+      "eccp256": {
+        "status": "in_progress",
+        "estimated_total_time_h": 8.2,
+        "elapsed_time_h": 5.0,
+        "remaining_time_h": 3.2,
+        "success_probability": 0.79,
+        "confidence_interval": [0.73, 0.84]
+      },
+      "aes128": {
+        "status": "completed",
+        "total_time_h": 4.5,
+        "success_probability": 0.91,
+        "confidence_interval": [0.88, 0.94],
+        "key_recovered": true,
+        "verification_status": "validated"
+      },
+      "md5": {
+        "status": "completed",
+        "total_time_h": 1.5,
+        "success_probability": 0.95,
+        "confidence_interval": [0.92, 0.98],
+        "collision_found": true,
+        "verification_status": "validated"
+      }
+    },
+    "vulnerable_assets": [
+      {
+        "asset_id": "VPN_GATEWAY",
+        "crypto_type": "RSA2048",
+        "risk_level": "critical",
+        "time_to_break_h": 12.0,
+        "impact": "critical",
+        "pqc_migration_status": "not_started",
+        "recommended_replacement": "Kyber1024"
+      },
+      {
+        "asset_id": "PAYMENT_GATEWAY",
+        "crypto_type": "TLS1.2(RSA2048)",
+        "risk_level": "critical",
+        "time_to_break_h": 12.0,
+        "impact": "critical",
+        "pqc_migration_status": "not_started",
+        "recommended_replacement": "Kyber1024"
+      },
+      {
+        "asset_id": "IOT_FIRMWARE",
+        "crypto_type": "ECCP256",
+        "risk_level": "high",
+        "time_to_break_h": 8.2,
+        "impact": "high",
+        "pqc_migration_status": "in_progress",
+        "recommended_replacement": "Dilithium3"
+      },
+      {
+        "asset_id": "CONTAINER_SIGNING",
+        "crypto_type": "ECCP384",
+        "risk_level": "high",
+        "time_to_break_h": 9.2,
+        "impact": "high",
+        "pqc_migration_status": "planned",
+        "recommended_replacement": "Dilithium3"
+      },
+      {
+        "asset_id": "BACKUP_ARCHIVES",
+        "crypto_type": "AES128",
+        "risk_level": "medium",
+        "time_to_break_h": 4.5,
+        "impact": "high",
+        "pqc_migration_status": "completed",
+        "recommended_replacement": "AES256-GCM"
+      },
+      {
+        "asset_id": "API_SERVERS",
+        "crypto_type": "SHA1",
+        "risk_level": "medium",
+        "time_to_break_h": 10.0,
+        "impact": "medium",
+        "pqc_migration_status": "in_progress",
+        "recommended_replacement": "SHA3-256"
+      },
+      {
+        "asset_id": "LEGACY_HASHES",
+        "crypto_type": "MD5",
+        "risk_level": "medium",
+        "time_to_break_h": 1.5,
+        "impact": "medium",
+        "pqc_migration_status": "in_progress",
+        "recommended_replacement": "SHA3-256"
+      },
+      {
+        "asset_id": "INTERNAL_CA",
+        "crypto_type": "RSA3072",
+        "risk_level": "medium",
+        "time_to_break_h": 20.0,
+        "impact": "high",
+        "pqc_migration_status": "planned",
+        "recommended_replacement": "Kyber1024+Dilithium3"
+      },
+      {
+        "asset_id": "HR_DATABASE",
+        "crypto_type": "AES256",
+        "risk_level": "low",
+        "time_to_break_h": null,
+        "impact": "high",
+        "pqc_migration_status": "completed",
+        "recommended_replacement": "AES256-GCM"
+      },
+      {
+        "asset_id": "DATA_LAKE",
+        "crypto_type": "AES256",
+        "risk_level": "low",
+        "time_to_break_h": null,
+        "impact": "high",
+        "pqc_migration_status": "completed",
+        "recommended_replacement": "AES256-GCM"
+      }
+    ],
+    "harvest_now_decrypt_later": {
+      "model_version": "HNDL-5.1.2",
+      "critical_window": {
+        "start_year": 2027,
+        "end_year": 2032,
+        "confidence": 0.82
+      },
+      "hardware_trajectory": {
+        "current_max_physical_qubits": 256,
+        "current_max_logical_qubits": 51,
+        "projected_logical_qubits_by_year": [
+          {"year": 2026, "qubits": 150, "confidence": 0.85},
+          {"year": 2027, "qubits": 350, "confidence": 0.78},
+          {"year": 2028, "qubits": 725, "confidence": 0.72},
+          {"year": 2029, "qubits": 1200, "confidence": 0.68},
+          {"year": 2030, "qubits": 2000, "confidence": 0.62},
+          {"year": 2031, "qubits": 3500, "confidence": 0.58},
+          {"year": 2032, "qubits": 5000, "confidence": 0.52}
+        ],
+        "gate_error_improvement_rate": 1.35,
+        "gate_error_improvement_stdev": 0.18
+      },
+      "monte_carlo_simulations": {
+        "total_runs": 10000,
+        "runs_exceeding_threshold": 6230,
+        "threshold_description": "1000+ error-corrected qubits before 2032",
+        "probability": 0.623
+      }
+    }
+  },
+  
+  "security_controls": {
+    "vault_status": {
+      "namespace": "qstrike-ephemeral-run-20250501-003",
+      "creation_time": "2025-05-01T08:00:00Z",
+      "expiry_time": "2025-05-02T08:00:00Z",
+      "status": "active",
+      "auto_revoke": true
+    },
+    "mtls_certificates": [
+      {
+        "component": "client_to_qryai",
+        "fingerprint": "8f:2a:3d:5e:7c:9b:1f:4a:6d:2e:8c:0b:3f:7a:9e:5d",
+        "issued_by": "QStrike Ephemeral CA",
+        "valid_until": "2025-05-02T08:00:00Z"
+      },
+      {
+        "component": "qryai_to_provider",
+        "fingerprint": "3a:9c:5e:2f:7b:1d:8a:4c:6e:0f:2d:9b:5a:7c:3e:1f",
+        "issued_by": "QStrike Ephemeral CA",
+        "valid_until": "2025-05-02T08:00:00Z"
+      },
+      {
+        "component": "qryai_to_hpc",
+        "fingerprint": "5c:2e:9a:7f:1b:3d:8e:6a:0f:4c:2d:9b:5a:7e:3c:1f",
+        "issued_by": "QStrike Ephemeral CA",
+        "valid_until": "2025-05-02T08:00:00Z"
+      }
+    ],
+    "jwt_tokens": [
+      {
+        "component": "client_api",
+        "issuer": "qstrike-auth",
+        "expiry_time": "2025-05-01T12:45:00Z",
+        "auto_renew": true
+      },
+      {
+        "component": "provider_api_aws",
+        "issuer": "qstrike-auth",
+        "expiry_time": "2025-05-01T12:40:00Z",
+        "auto_renew": true
+      },
+      {
+        "component": "provider_api_google",
+        "issuer": "qstrike-auth",
+        "expiry_time": "2025-05-01T12:42:00Z",
+        "auto_renew": true
+      },
+      {
+        "component": "provider_api_ibm",
+        "issuer": "qstrike-auth",
+        "expiry_time": "2025-05-01T12:43:00Z",
+        "auto_renew": true
+      },
+      {
+        "component": "provider_api_quantinuum",
+        "issuer": "qstrike-auth",
+        "expiry_time": "2025-05-01T12:41:00Z",
+        "auto_renew": true
+      }
+    ],
+    "double_blind_job_ids": {
+      "enabled": true,
+      "hashing_algorithm": "SHA3-256",
+      "asset_name_redaction": true,
+      "permutation_enabled": true
+    },
+    "provenance_bundle": {
+      "enabled": true,
+      "signature_algorithm": "Ed25519",
+      "verification_key_fingerprint": "7c:9a:3e:5d:1f:8b:2e:4c:6a:0d:9f:3b:5e:7a:1c:2f",
+      "last_signed_timestamp": "2025-05-01T12:30:00Z",
+      "sign_interval_sec": 300
+    },
+    "sandbox_report_generator": {
+      "enabled": true,
+      "isolation_level": "vm",
+      "outbound_access": false,
+      "image_hash": "sha256:7d9f3e1a2c5b8e4f0d6a9c2b5e7f1d3a"
+    }
+  },
+  
+  "budget_and_cost": {
+    "total_budget_usd": 2500.00,
+    "current_spend_usd": 1042.15,
+    "projected_total_usd": 2152.80,
+    "budget_status": "within_limits",
+    "provider_costs": [
+      {
+        "provider": "GOOGLE_WILLOW",
+        "current_usd": 298.65,
+        "projected_usd": 485.20,
+        "jobs_completed": 3,
+        "jobs_in_progress": 5,
+        "cost_per_logical_qubit_hour": 0.84
+      },
+      {
+        "provider": "IBM_QUANTUM",
+        "current_usd": 230.30,
+        "projected_usd": 420.15,
+        "jobs_completed": 1,
+        "jobs_in_progress": 6,
+        "cost_per_logical_qubit_hour": 0.75
+      },
+      {
+        "provider": "AWS_BRAKET_RIGETTI",
+        "current_usd": 182.75,
+        "projected_usd": 345.80,
+        "jobs_completed": 1,
+        "jobs_in_progress": 4,
+        "cost_per_logical_qubit_hour": 0.68
+      },
+      {
+        "provider": "AWS_BRAKET_IONQ",
+        "current_usd": 122.50,
+        "projected_usd": 315.45,
+        "jobs_completed": 1,
+        "jobs_in_progress": 3,
+        "cost_per_logical_qubit_hour": 1.25
+      },
+      {
+        "provider": "QUANTINUUM_H2_1",
+        "current_usd": 208.20,
+        "projected_usd": 585.70,
+        "jobs_completed": 2,
+        "jobs_in_progress": 2,
+        "cost_per_logical_qubit_hour": 1.85
+      },
+      {
+        "provider": "PASQAL_NEUTRAL_ATOM",
+        "current_usd": 0.00,
+        "projected_usd": 0.00,
+        "jobs_completed": 0,
+        "jobs_in_progress": 0,
+        "cost_per_logical_qubit_hour": 0.78
+      },
+      {
+        "provider": "QUERA_ANALOG",
+        "current_usd": 0.00,
+        "projected_usd": 0.00,
+        "jobs_completed": 0,
+        "jobs_in_progress": 0,
+        "cost_per_logical_qubit_hour": 0.92
+      }
+    ],
+    "hpc_costs": {
+      "current_usd": 180.50,
+      "projected_usd": 320.75,
+      "cpu_cost_per_hour": 1.25,
+      "gpu_cost_per_hour": 3.80
+    },
+    "cost_per_success": {
+      "aes128_key": 505.40,
+      "md5_collision": 191.10,
+      "rsa2048_estimated": 965.25,
+      "eccp256_estimated": 812.60
+    }
+  },
+  
+  "integration_endpoints": {
+    "prometheus": {
+      "metrics_endpoint": "http://qryai:9001/metrics",
+      "scrape_interval_sec": 15,
+      "exporters": ["job_status", "provider_health", "resource_utilization", "cross_validation"]
+    },
+    "websocket": {
+      "events_endpoint": "wss://qryai/events",
+      "event_types": [
+        "reroute",
+        "xval_fault",
+        "budget_threshold",
+        "qec_fallback",
+        "run_complete",
+        "shard_complete",
+        "provider_calibration"
+      ],
+      "auth_required": true
+    },
+    "siem": {
+      "forwarder_status": "active",
+      "cim_mappings": {
+        "splunk": true,
+        "elastic": true,
+        "azure_sentinel": false,
+        "sumo_logic": false
+      },
+      "event_categories": ["security", "performance", "validation", "budget"]
+    },
+    "replay": {
+      "enabled": true,
+      "trace_file": "qstrike-run-20250501-003.qsr",
+      "features": ["step_by_step", "time_acceleration", "provider_focus", "budget_what_if"]
+    },
+    "api_documentation": {
+      "openapi_spec": "/api/docs/openapi.yaml",
+      "graphql_schema": "/api/docs/schema.graphql",
+      "examples_repo": "github.com/qryptonic/qstrike-examples"
+    }
+  },
+  
+  "compliance_and_reporting": {
+    "risk_heatmap": {
+      "dimensions": ["asset_type", "crypto_algorithm"],
+      "color_scale": ["green", "yellow", "orange", "red"],
+      "download_formats": ["svg", "png", "pdf"]
+    },
+    "mermaid_ecosystem_diagram": {
+      "enabled": true,
+      "node_count": 28,
+      "edge_count": 45,
+      "risk_overlay": true
+    },
+    "findings_export": {
+      "formats": ["json", "csv", "pdf", "pptx", "confluence"],
+      "scheduled_export": {
+        "enabled": true,
+        "interval_min": 30,
+        "destinations": ["s3", "git", "sharepoint"]
+      }
+    },
+    "compliance_frameworks": [
+      {
+        "name": "PCI DSS",
+        "version": "4.0",
+        "status": "assessment_complete",
+        "compliant": false,
+        "gaps": [
+          {"control": "3.6.1", "description": "RSA2048 certificates must be replaced", "severity": "high"},
+          {"control": "3.6.7", "description": "Key rotation procedures inadequate", "severity": "medium"}
+        ]
+      },
+      {
+        "name": "HIPAA",
+        "version": "2023",
+        "status": "assessment_complete",
+        "compliant": false,
+        "gaps": [
+          {"control": "164.312(a)(2)(iv)", "description": "Encryption standards outdated", "severity": "high"}
+        ]
+      },
+      {
+        "name": "GDPR",
+        "version": "2018",
+        "status": "assessment_complete",
+        "compliant": false,
+        "gaps": [
+          {"control": "Art. 32", "description": "State of the art encryption required", "severity": "high"}
+        ]
+      },
+      {
+        "name": "ISO 27001",
+        "version": "2022",
+        "status": "assessment_complete",
+        "compliant": false,
+        "gaps": [
+          {"control": "A.10.1.2", "description": "Key management procedures", "severity": "medium"},
+          {"control": "A.8.2.1", "description": "Classification guidelines", "severity": "low"}
+        ]
+      },
+      {
+        "name": "NSA CNSA 2.0",
+        "version": "2022",
+        "status": "assessment_complete",
+        "compliant": false,
+        "gaps": [
+          {"control": "Q-resistant KEM", "description": "Must implement approved PQC", "severity": "critical"},
+          {"control": "Digital Signatures", "description": "Must implement approved PQC signatures", "severity": "critical"},
+          {"control": "Symmetric key min", "description": "AES128 below minimum requirement", "severity": "high"}
+        ]
+      }
+    ],
+    "pqc_migration": {
+      "algorithms": [
+        {
+          "name": "Kyber1024",
+          "type": "KEM",
+          "progress": {
+            "dev": 80,
+            "stage": 55,
+            "prod": 30
+          },
+          "estimated_completion_date": "2025-08-15"
+        },
+        {
+          "name": "Dilithium3",
+          "type": "Digital Signature",
+          "progress": {
+            "dev": 70,
+            "stage": 45,
+            "prod": 20
+          },
+          "estimated_completion_date": "2025-09-30"
+        }
+      ],
+      "asset_migration_status": [
+        {"asset_id": "VPN_GATEWAY", "status": "not_started", "priority": "critical", "target_date": "2025-06-30"},
+        {"asset_id": "PAYMENT_GATEWAY", "status": "not_started", "priority": "critical", "target_date": "2025-06-15"},
+        {"asset_id": "IOT_FIRMWARE", "status": "in_progress", "priority": "high", "target_date": "2025-07-15"},
+        {"asset_id": "CONTAINER_SIGNING", "status": "planned", "priority": "high", "target_date": "2025-07-30"},
+        {"asset_id": "BACKUP_ARCHIVES", "status": "completed", "priority": "medium", "completion_date": "2025-03-15"},
+        {"asset_id": "API_SERVERS", "status": "in_progress", "priority": "medium", "target_date": "2025-08-15"},
+        {"asset_id": "LEGACY_HASHES", "status": "in_progress", "priority": "medium", "target_date": "2025-08-30"},
+        {"asset_id": "INTERNAL_CA", "status": "planned", "priority": "medium", "target_date": "2025-09-15"},
+        {"asset_id": "HR_DATABASE", "status": "completed", "priority": "low", "completion_date": "2025-02-28"},
+        {"asset_id": "DATA_LAKE", "status": "completed", "priority": "low", "completion_date": "2025-02-15"}
+      ]
+    }
+  }
+}
