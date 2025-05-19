@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWL SECURITY DEMO</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #9D00FF;
+            --primary-purple-dim: rgba(157, 0, 255, 0.4);
+            --bg-dark: #000000;
+            --bg-panel: rgba(25, 5, 35, 0.95);
+            --text-color: #FFFFFF;
+            --text-dim: rgba(255, 255, 255, 0.5);
+            --accent-cyan: #00FFFF;
+            --accent-magenta: #FF005C;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary-purple);
+            font-size: 16px;
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-panel {
+            background-color: rgba(25, 5, 40, 0.85);
+            border: 1px solid var(--primary-purple);
+            padding: 15px;
+            min-height: 180px;
+            position: relative;
+        }
+        
+        .panel-header {
+            color: var(--accent-cyan);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(157, 0, 255, 0.3);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .data-label {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+        
+        .data-value {
+            text-align: right;
+        }
+        
+        .value-normal {
+            color: var(--text-color);
+        }
+        
+        .value-caution {
+            color: #FFB800;
+        }
+        
+        .value-success {
+            color: #00FF8B;
+        }
+        
+        .value-warning {
+            color: var(--accent-magenta);
+        }
+        
+        .status-area {
+            height: 40px;
+            background-color: rgba(10, 0, 20, 0.5);
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        
+        button {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--primary-purple);
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        button:hover {
+            background-color: rgba(157, 0, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>OWL SECURITY SCANNER: BROWSER DATA DEMO</h1>
+    
+    <div class="dashboard-grid">
+        <!-- Browser & System Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">BROWSER & SYSTEM</div>
+            <div class="data-row">
+                <span class="data-label">USER AGENT:</span>
+                <span class="data-value" id="userAgent">CHECKING...</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">BROWSER:</span>
+                <span class="data-value" id="browser">CHECKING...</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">PLATFORM:</span>
+                <span class="data-value" id="platform">CHECKING...</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">SCREEN:</span>
+                <span class="data-value" id="screenRes">CHECKING...</span>
+            </div>
+        </div>
+        
+        <!-- Location Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">LOCATION & LANGUAGE</div>
+            <div class="data-row">
+                <span class="data-label">TIMEZONE:</span>
+                <span class="data-value" id="timezone">CHECKING...</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">LANGUAGE:</span>
+                <span class="data-value" id="language">CHECKING...</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">LANGUAGES:</span>
+                <span class="data-value" id="languages">CHECKING...</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label">LOCAL TIME:</span>
+                <span class="data-value" id="localTime">CHECKING...</span>
+            </div>
+        </div>
+        
+        <!-- USB Devices Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">USB DEVICES</div>
+            <div class="data-row">
+                <span class="data-label">API STATUS:</span>
+                <span class="data-value" id="usb-devices">CHECKING...</span>
+            </div>
+            <div class="status-area" id="usb-preview">
+                WebUSB API can access connected USB hardware
+            </div>
+        </div>
+        
+        <!-- MIDI Devices Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">MIDI DEVICES</div>
+            <div class="data-row">
+                <span class="data-label">API STATUS:</span>
+                <span class="data-value" id="midi-devices">CHECKING...</span>
+            </div>
+            <div class="status-area" id="midi-preview">
+                WebMIDI can detect music equipment
+            </div>
+        </div>
+        
+        <!-- Idle Detection Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">IDLE DETECTION</div>
+            <div class="data-row">
+                <span class="data-label">API STATUS:</span>
+                <span class="data-value" id="idle-state">CHECKING...</span>
+            </div>
+            <div class="status-area" id="idle-preview">
+                Can track when you're not using your device
+            </div>
+        </div>
+        
+        <!-- Wake Lock Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">WAKE LOCK</div>
+            <div class="data-row">
+                <span class="data-label">API STATUS:</span>
+                <span class="data-value" id="wake-lock">CHECKING...</span>
+            </div>
+            <div class="status-area" id="wake-lock-preview">
+                Can prevent device from sleeping
+            </div>
+        </div>
+        
+        <!-- Pointer Lock Panel -->
+        <div class="dashboard-panel">
+            <div class="panel-header">POINTER LOCK</div>
+            <div class="data-row">
+                <span class="data-label">API STATUS:</span>
+                <span class="data-value" id="pointer-lock">CHECKING...</span>
+            </div>
+            <div class="status-area" id="pointer-lock-preview">
+                Can capture and hide your mouse cursor
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Main initialization function
+        function initializeDashboard() {
+            console.log("Initializing dashboard data");
+            
+            // Browser and System Info
+            const userAgent = navigator.userAgent || "Unknown";
+            document.getElementById('userAgent').textContent = userAgent;
+            
+            // Detect browser
+            let browserName = "Unknown";
+            let browserVersion = "";
+            
+            if (userAgent.indexOf("Firefox") > -1) {
+                browserName = "Firefox";
+                const match = userAgent.match(/Firefox\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            } else if (userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Edg") === -1) {
+                browserName = "Chrome";
+                const match = userAgent.match(/Chrome\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            } else if (userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") === -1) {
+                browserName = "Safari";
+                const match = userAgent.match(/Version\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            } else if (userAgent.indexOf("Edg") > -1) {
+                browserName = "Edge";
+                const match = userAgent.match(/Edg\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            }
+            
+            document.getElementById('browser').textContent = `${browserName} ${browserVersion}`;
+            
+            // System info
+            document.getElementById('platform').textContent = navigator.platform || "Unknown";
+            
+            // Screen info
+            if (window.screen) {
+                document.getElementById('screenRes').textContent = `${window.screen.width || 0}×${window.screen.height || 0}`;
+            }
+            
+            // Time and location
+            const now = new Date();
+            document.getElementById('localTime').textContent = now.toLocaleTimeString();
+            
+            try {
+                document.getElementById('timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
+            } catch (e) {
+                document.getElementById('timezone').textContent = "Browser restricted";
+            }
+            
+            // Language
+            document.getElementById('language').textContent = navigator.language || "Unknown";
+            document.getElementById('languages').textContent = navigator.languages ? navigator.languages.join(', ') : (navigator.language || "Unknown");
+            
+            // Initialize all advanced APIs
+            initializeWebUSB();
+            initializeWebMIDI();
+            initializeIdleDetection();
+            initializeScreenWakeLock();
+            initializePointerLock();
+        }
+        
+        // WebUSB API implementation
+        function initializeWebUSB() {
+            const usbElement = document.getElementById('usb-devices');
+            if (!usbElement) {
+                console.warn("Element with ID 'usb-devices' not found");
+                return;
+            }
+            
+            if ('usb' in navigator) {
+                usbElement.innerHTML = `
+                    <span class="value-caution">USB API AVAILABLE</span>
+                    <button>SCAN USB DEVICES</button>
+                `;
+                
+                // Add event listener to the button
+                const button = usbElement.querySelector('button');
+                if (button) {
+                    button.addEventListener('click', async () => {
+                        try {
+                            usbElement.innerHTML = `
+                                <span class="value-caution">REQUESTING USB ACCESS...</span>
+                            `;
+                            
+                            // Request USB device access
+                            const devices = await navigator.usb.getDevices();
+                            
+                            if (devices.length > 0) {
+                                usbElement.innerHTML = `
+                                    <span class="value-warning">DETECTED: ${devices.length} USB DEVICE(S)</span>
+                                `;
+                                
+                                // Show device info
+                                const previewElement = document.getElementById('usb-preview');
+                                if (previewElement) {
+                                    let deviceListHTML = 'Devices:<br>';
+                                    devices.forEach(device => {
+                                        deviceListHTML += `• ${device.productName || 'Unknown'} (${device.vendorId}:${device.productId})<br>`;
+                                    });
+                                    
+                                    previewElement.innerHTML = deviceListHTML || 'No detailed information available';
+                                }
+                            } else {
+                                usbElement.innerHTML = `
+                                    <span class="value-caution">NO DEVICES FOUND</span>
+                                    <button>SCAN AGAIN</button>
+                                `;
+                            }
+                        } catch (e) {
+                            usbElement.innerHTML = `
+                                <span class="value-normal">ACCESS DENIED</span>
+                                <button>TRY AGAIN</button>
+                            `;
+                        }
+                    });
+                }
+            } else {
+                usbElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // WebMIDI API implementation
+        function initializeWebMIDI() {
+            const midiElement = document.getElementById('midi-devices');
+            if (!midiElement) {
+                console.warn("Element with ID 'midi-devices' not found");
+                return;
+            }
+            
+            if ('requestMIDIAccess' in navigator) {
+                midiElement.innerHTML = `
+                    <span class="value-caution">MIDI API AVAILABLE</span>
+                    <button>SCAN MIDI DEVICES</button>
+                `;
+                
+                // Add event listener to the button
+                const button = midiElement.querySelector('button');
+                if (button) {
+                    button.addEventListener('click', async () => {
+                        try {
+                            midiElement.innerHTML = `
+                                <span class="value-caution">REQUESTING MIDI ACCESS...</span>
+                            `;
+                            
+                            // Request MIDI access
+                            const midiAccess = await navigator.requestMIDIAccess();
+                            
+                            const inputs = midiAccess.inputs.size;
+                            const outputs = midiAccess.outputs.size;
+                            
+                            if (inputs > 0 || outputs > 0) {
+                                midiElement.innerHTML = `
+                                    <span class="value-warning">DETECTED: ${inputs} IN, ${outputs} OUT</span>
+                                `;
+                                
+                                // Show device info
+                                const previewElement = document.getElementById('midi-preview');
+                                if (previewElement) {
+                                    let devicesHTML = '';
+                                    
+                                    if (inputs > 0) {
+                                        devicesHTML += 'Inputs:<br>';
+                                        midiAccess.inputs.forEach(input => {
+                                            devicesHTML += `• ${input.name || 'Unknown'}<br>`;
+                                        });
+                                    }
+                                    
+                                    if (outputs > 0) {
+                                        devicesHTML += 'Outputs:<br>';
+                                        midiAccess.outputs.forEach(output => {
+                                            devicesHTML += `• ${output.name || 'Unknown'}<br>`;
+                                        });
+                                    }
+                                    
+                                    previewElement.innerHTML = devicesHTML;
+                                }
+                            } else {
+                                midiElement.innerHTML = `
+                                    <span class="value-caution">NO DEVICES FOUND</span>
+                                    <button>SCAN AGAIN</button>
+                                `;
+                            }
+                        } catch (e) {
+                            midiElement.innerHTML = `
+                                <span class="value-normal">ACCESS DENIED</span>
+                                <button>TRY AGAIN</button>
+                            `;
+                        }
+                    });
+                }
+            } else {
+                midiElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Idle Detection API implementation
+        function initializeIdleDetection() {
+            const idleElement = document.getElementById('idle-state');
+            if (!idleElement) {
+                console.warn("Element with ID 'idle-state' not found");
+                return;
+            }
+            
+            if ('IdleDetector' in window) {
+                idleElement.innerHTML = `
+                    <span class="value-caution">IDLE API AVAILABLE</span>
+                    <button>MONITOR IDLE STATE</button>
+                `;
+                
+                // Add event listener to the button
+                const button = idleElement.querySelector('button');
+                if (button) {
+                    button.addEventListener('click', async () => {
+                        try {
+                            idleElement.innerHTML = `
+                                <span class="value-caution">REQUESTING PERMISSION...</span>
+                            `;
+                            
+                            // Request idle detection permission
+                            const state = await IdleDetector.requestPermission();
+                            
+                            if (state === "granted") {
+                                // Success
+                                idleElement.innerHTML = `
+                                    <span class="value-warning">MONITORING ACTIVE</span>
+                                `;
+                                
+                                document.getElementById('idle-preview').textContent = 'Successfully monitoring your idle state';
+                            } else {
+                                idleElement.innerHTML = `
+                                    <span class="value-normal">PERMISSION DENIED</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            }
+                        } catch (e) {
+                            idleElement.innerHTML = `
+                                <span class="value-normal">API ERROR: ${e.message}</span>
+                                <button>TRY AGAIN</button>
+                            `;
+                        }
+                    });
+                }
+            } else {
+                idleElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Screen Wake Lock API implementation
+        function initializeScreenWakeLock() {
+            const wakeLockElement = document.getElementById('wake-lock');
+            if (!wakeLockElement) {
+                console.warn("Element with ID 'wake-lock' not found");
+                return;
+            }
+            
+            if ('wakeLock' in navigator) {
+                let wakeLock = null;
+                
+                wakeLockElement.innerHTML = `
+                    <span class="value-caution">WAKE LOCK API AVAILABLE</span>
+                    <button>PREVENT SCREEN SLEEP</button>
+                `;
+                
+                // Add event listener to the button
+                const button = wakeLockElement.querySelector('button');
+                if (button) {
+                    button.addEventListener('click', async () => {
+                        try {
+                            if (wakeLock) {
+                                // Release existing wake lock
+                                wakeLock.release();
+                                wakeLock = null;
+                                
+                                wakeLockElement.innerHTML = `
+                                    <span class="value-normal">WAKE LOCK RELEASED</span>
+                                    <button>PREVENT SCREEN SLEEP</button>
+                                `;
+                                document.getElementById('wake-lock-preview').textContent = 'Screen can now sleep normally';
+                                return;
+                            }
+                            
+                            wakeLockElement.innerHTML = `
+                                <span class="value-caution">REQUESTING WAKE LOCK...</span>
+                            `;
+                            
+                            // Request a screen wake lock
+                            wakeLock = await navigator.wakeLock.request('screen');
+                            
+                            wakeLockElement.innerHTML = `
+                                <span class="value-warning">WAKE LOCK ACTIVE</span>
+                                <button>RELEASE WAKE LOCK</button>
+                            `;
+                            
+                            document.getElementById('wake-lock-preview').textContent = 'Your screen will not sleep while this tab is active';
+                            
+                            // Add a listener to detect when wake lock is released
+                            wakeLock.addEventListener('release', () => {
+                                wakeLockElement.innerHTML = `
+                                    <span class="value-normal">WAKE LOCK RELEASED</span>
+                                    <button>PREVENT SCREEN SLEEP</button>
+                                `;
+                                document.getElementById('wake-lock-preview').textContent = 'Screen can now sleep normally';
+                                wakeLock = null;
+                            });
+                        } catch (e) {
+                            wakeLockElement.innerHTML = `
+                                <span class="value-normal">ERROR: ${e.message}</span>
+                                <button>TRY AGAIN</button>
+                            `;
+                        }
+                    });
+                }
+            } else {
+                wakeLockElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Pointer Lock API implementation
+        function initializePointerLock() {
+            const pointerLockElement = document.getElementById('pointer-lock');
+            if (!pointerLockElement) {
+                console.warn("Element with ID 'pointer-lock' not found");
+                return;
+            }
+            
+            // Check if pointer lock is supported
+            if ('pointerLockElement' in document) {
+                let isLocked = false;
+                
+                pointerLockElement.innerHTML = `
+                    <span class="value-caution">POINTER LOCK API AVAILABLE</span>
+                    <button>LOCK POINTER</button>
+                `;
+                
+                // Create a visualization area
+                const visualizationArea = document.createElement('div');
+                visualizationArea.style.height = '80px';
+                visualizationArea.style.backgroundColor = 'rgba(10, 0, 20, 0.5)';
+                visualizationArea.style.marginTop = '10px';
+                visualizationArea.style.display = 'flex';
+                visualizationArea.style.justifyContent = 'center';
+                visualizationArea.style.alignItems = 'center';
+                visualizationArea.textContent = 'Click button to lock pointer';
+                
+                const previewElement = document.getElementById('pointer-lock-preview');
+                if (previewElement) {
+                    previewElement.innerHTML = '';
+                    previewElement.appendChild(visualizationArea);
+                }
+                
+                // Handle mouse movement when pointer is locked
+                function handleMouseMovement(e) {
+                    if (isLocked) {
+                        const dot = document.createElement('div');
+                        dot.style.position = 'absolute';
+                        dot.style.width = '3px';
+                        dot.style.height = '3px';
+                        dot.style.backgroundColor = 'cyan';
+                        dot.style.borderRadius = '50%';
+                        
+                        // Calculate position relative to visualization area
+                        const rect = visualizationArea.getBoundingClientRect();
+                        const offsetX = e.movementX || 0;
+                        const offsetY = e.movementY || 0;
+                        
+                        // Create a position that's bounded within the visualization area
+                        let x = (visualizationArea.offsetWidth / 2) + offsetX;
+                        let y = (visualizationArea.offsetHeight / 2) + offsetY;
+                        
+                        // Keep within bounds
+                        x = Math.max(0, Math.min(x, visualizationArea.offsetWidth));
+                        y = Math.max(0, Math.min(y, visualizationArea.offsetHeight));
+                        
+                        dot.style.left = x + 'px';
+                        dot.style.top = y + 'px';
+                        
+                        visualizationArea.appendChild(dot);
+                        
+                        // Remove dot after a short delay to prevent too many dots
+                        setTimeout(() => {
+                            if (dot.parentNode === visualizationArea) {
+                                visualizationArea.removeChild(dot);
+                            }
+                        }, 500);
+                    }
+                }
+                
+                // Add event listener to the button
+                const button = pointerLockElement.querySelector('button');
+                if (button) {
+                    button.addEventListener('click', () => {
+                        if (isLocked) {
+                            // Exit pointer lock
+                            document.exitPointerLock();
+                            return;
+                        }
+                        
+                        try {
+                            // Request pointer lock on the visualization area
+                            visualizationArea.requestPointerLock();
+                            
+                            // Setup listeners
+                            document.addEventListener('pointerlockchange', () => {
+                                if (document.pointerLockElement === visualizationArea) {
+                                    // Pointer is locked
+                                    isLocked = true;
+                                    visualizationArea.style.backgroundColor = 'rgba(157, 0, 255, 0.2)';
+                                    visualizationArea.style.border = '1px solid rgba(157, 0, 255, 0.5)';
+                                    visualizationArea.textContent = '';
+                                    
+                                    pointerLockElement.innerHTML = `
+                                        <span class="value-warning">POINTER LOCKED</span>
+                                        <button>RELEASE POINTER</button>
+                                    `;
+                                    
+                                    // Add mousemove listener
+                                    document.addEventListener('mousemove', handleMouseMovement);
+                                } else {
+                                    // Pointer lock was released
+                                    isLocked = false;
+                                    visualizationArea.style.backgroundColor = 'rgba(10, 0, 20, 0.5)';
+                                    visualizationArea.style.border = 'none';
+                                    visualizationArea.textContent = 'Pointer lock released';
+                                    
+                                    document.removeEventListener('mousemove', handleMouseMovement);
+                                    
+                                    pointerLockElement.innerHTML = `
+                                        <span class="value-caution">POINTER LOCK AVAILABLE</span>
+                                        <button>LOCK POINTER</button>
+                                    `;
+                                }
+                            });
+                            
+                            document.addEventListener('pointerlockerror', () => {
+                                pointerLockElement.innerHTML = `
+                                    <span class="value-normal">LOCK ERROR</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            });
+                        } catch (e) {
+                            pointerLockElement.innerHTML = `
+                                <span class="value-normal">ERROR: ${e.message}</span>
+                                <button>TRY AGAIN</button>
+                            `;
+                        }
+                    });
+                }
+            } else {
+                pointerLockElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Initialize the dashboard when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+    </script>
+</body>
+</html>

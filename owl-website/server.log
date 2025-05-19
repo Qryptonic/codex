@@ -1,0 +1,9 @@
+ INFO  Accepting connections at http://localhost:4000
+ HTTP  4/16/2025 11:42:21 AM ::1 GET /
+ HTTP  4/16/2025 11:42:21 AM ::1 Returned 200 in 56 ms
+ HTTP  4/16/2025 11:42:21 AM ::1 GET /favicon.ico
+ HTTP  4/16/2025 11:42:21 AM ::1 Returned 200 in 2 ms
+ HTTP  4/16/2025 11:49:59 AM ::1 GET /
+ HTTP  4/16/2025 11:49:59 AM ::1 Returned 304 in 6 ms
+ HTTP  4/16/2025 11:49:59 AM ::1 GET /favicon.ico
+ HTTP  4/16/2025 11:49:59 AM ::1 Returned 304 in 2 ms

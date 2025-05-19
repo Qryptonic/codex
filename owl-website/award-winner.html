@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWL SENTINEL :: DIGITAL EXPOSURE ANALYSIS</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #9D00FF;
+            --primary-purple-dim: rgba(157, 0, 255, 0.4);
+            --primary-purple-deep: #6600cc;
+            --primary-purple-bright: #bf00ff;
+            --bg-dark: #000000;
+            --bg-dark-purple: #13001a;
+            --bg-panel: rgba(25, 5, 35, 0.95);
+            --bg-panel-hot: rgba(30, 5, 45, 0.95);
+            --text-color: #FFFFFF;
+            --text-dim: rgba(255, 255, 255, 0.5);
+            --text-glow: rgba(255, 255, 255, 0.9);
+            --accent-cyan: #00FFFF;
+            --accent-magenta: #FF005C;
+            --accent-neon: #F012BE;
+            --accent-electric: #7700FF;
+        }
+        
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+        
+        @keyframes rotate {
+            to {
+                --angle: 360deg;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, var(--bg-dark-purple) 0%, var(--bg-dark) 100%);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Scan line effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-purple-dim), transparent);
+            opacity: 0.5;
+            animation: scanLine 8s linear infinite;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        @keyframes scanLine {
+            0% { top: -5px; }
+            100% { top: 100vh; }
+        }
+        
+        /* Grid background */
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(25, 5, 35, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(25, 5, 35, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary-purple);
+            font-size: 20px;
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 10px var(--primary-purple-dim), 0 0 20px var(--primary-purple-dim);
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(157, 0, 255, 0.5), transparent);
+            animation: headerSweep 5s infinite;
+            filter: blur(3px);
+        }
+        
+        @keyframes headerSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .secure-notice {
+            text-align: center;
+            color: var(--accent-cyan);
+            font-size: 10px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 20px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeInGrid 1s forwards;
+        }
+        
+        @keyframes fadeInGrid {
+            to { opacity: 1; }
+        }
+        
+        .dashboard-panel {
+            background-color: rgba(25, 5, 40, 0.85);
+            background-image: linear-gradient(145deg, rgba(40, 10, 60, 0.5), rgba(15, 2, 30, 0.8));
+            border: 1px solid transparent;
+            border-image: conic-gradient(from var(--angle), var(--primary-purple-dim), var(--accent-cyan), var(--primary-purple), var(--primary-purple-dim)) 1;
+            animation: rotate 4s linear infinite, panelFadeIn 0.8s forwards;
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+            padding: 15px;
+            min-height: 180px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(10px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        @keyframes panelFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Stagger panel animations */
+        .dashboard-panel:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-panel:nth-child(2) { animation-delay: 0.2s; }
+        .dashboard-panel:nth-child(3) { animation-delay: 0.3s; }
+        .dashboard-panel:nth-child(4) { animation-delay: 0.4s; }
+        .dashboard-panel:nth-child(5) { animation-delay: 0.5s; }
+        .dashboard-panel:nth-child(6) { animation-delay: 0.6s; }
+        .dashboard-panel:nth-child(7) { animation-delay: 0.7s; }
+        .dashboard-panel:nth-child(8) { animation-delay: 0.8s; }
+        .dashboard-panel:nth-child(9) { animation-delay: 0.9s; }
+        .dashboard-panel:nth-child(10) { animation-delay: 1.0s; }
+        .dashboard-panel:nth-child(11) { animation-delay: 1.1s; }
+        .dashboard-panel:nth-child(12) { animation-delay: 1.2s; }
+        
+        /* Add scan line effect to panels */
+        .dashboard-panel::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            animation: scanEffect 3s infinite linear;
+            opacity: 0.5;
+        }
+        
+        @keyframes scanEffect {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        
+        /* Corner accents for panels */
+        .dashboard-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border-top: 1px solid var(--accent-cyan);
+            border-right: 1px solid var(--accent-cyan);
+            opacity: 0.8;
+        }
+        
+        .panel-header {
+            color: var(--accent-cyan);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(157, 0, 255, 0.3);
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--primary-purple), var(--accent-cyan), var(--primary-purple));
+            animation: glowBorder 3s infinite alternate;
+        }
+        
+        @keyframes glowBorder {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 10px;
+        }
+        
+        .data-label {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+        
+        .data-value {
+            text-align: right;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .value-normal {
+            color: var(--text-color);
+        }
+        
+        .value-caution {
+            color: #FFB800;
+        }
+        
+        .value-success {
+            color: #00FF8B;
+        }
+        
+        .value-warning {
+            color: var(--accent-magenta);
+        }
+        
+        .status-area {
+            height: 40px;
+            background-color: rgba(10, 0, 20, 0.5);
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            color: var(--text-dim);
+            padding: 8px;
+            overflow: auto;
+        }
+        
+        button {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--primary-purple);
+            padding: 8px;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            clip-path: polygon(
+                0 0, 
+                calc(100% - 5px) 0, 
+                100% 5px, 
+                100% 100%, 
+                5px 100%, 
+                0 calc(100% - 5px)
+            );
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(157, 0, 255, 0.2), transparent);
+            transition: transform 0.5s ease;
+        }
+        
+        button:hover::before {
+            transform: translateX(100%);
+        }
+        
+        button:hover {
+            background-color: rgba(157, 0, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+        
+        .network-map {
+            height: 80px;
+            background-color: rgba(10, 0, 20, 0.5);
+            margin-top: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .network-node {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            animation: nodePulse 3s infinite alternate;
+        }
+        
+        @keyframes nodePulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+        
+        .network-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-cyan), transparent);
+            transform-origin: left center;
+        }
+        
+        .risk-gauge {
+            height: 4px;
+            background-color: rgba(10, 0, 20, 0.5);
+            margin: 5px 0;
+            position: relative;
+        }
+        
+        .risk-level {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #00FF8B, #FFB800, var(--accent-magenta));
+        }
+        
+        .footer-summary {
+            text-align: center;
+            max-width: 800px;
+            margin: 20px auto;
+            color: var(--text-color);
+            font-size: 12px;
+            padding: 15px;
+            border: 1px solid var(--primary-purple);
+            background-color: rgba(25, 5, 35, 0.5);
+        }
+        
+        .highlight-text {
+            color: var(--accent-magenta);
+            font-weight: bold;
+        }
+        
+        .summary-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 20px auto;
+            gap: 15px;
+        }
+        
+        .summary-item {
+            flex: 1 0 40%;
+            background-color: rgba(25, 5, 35, 0.5);
+            border: 1px solid var(--primary-purple);
+            padding: 10px;
+            font-size: 10px;
+        }
+        
+        .summary-item div:first-child {
+            color: var(--accent-cyan);
+            margin-bottom: 5px;
+        }
+        
+        .data-animate {
+            animation: dataFlash 2s infinite alternate;
+            text-shadow: 0 0 5px currentColor;
+        }
+        
+        @keyframes dataFlash {
+            0% { opacity: 0.7; text-shadow: 0 0 3px currentColor; }
+            100% { opacity: 1; text-shadow: 0 0 8px currentColor, 0 0 15px rgba(157, 0, 255, 0.7); }
+        }
+        
+        /* Futuristic data typing effect */
+        .typing-effect {
+            overflow: hidden;
+            border-right: 2px solid var(--accent-cyan);
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--accent-cyan); }
+        }
+        
+        .preview-container {
+            height: 80px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 10px;
+            background-color: rgba(10, 0, 20, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    
+    <div class="dashboard-container">
+        <h1 class="page-header">OWL SENTINEL :: DIGITAL EXPOSURE ANALYSIS</h1>
+        
+        <div class="secure-notice">
+            ☐ Secure Enclave Active: All data processing occurs locally in your browser. No external transmission.
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Identity & Location Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">IDENTITY & LOCATION</div>
+                <div class="data-row">
+                    <span class="data-label">USER ID:</span>
+                    <span class="data-value value-normal" id="username-display">ANONYMOUS</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">SESSION ID:</span>
+                    <span class="data-value value-normal" id="session-id-value">LOADING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">LOCATION:</span>
+                    <span class="data-value value-caution" id="location">ANALYZING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">IP ADDRESS:</span>
+                    <span class="data-value value-warning" id="publicIp">REDACTED</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">LOCAL IP:</span>
+                    <span class="data-value value-normal" id="localIp">DETECTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">TIMEZONE:</span>
+                    <span class="data-value value-caution" id="timezone">CHECKING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">LOCAL TIME:</span>
+                    <span class="data-value value-normal" id="localTime">SYNCING...</span>
+                </div>
+            </div>
+            
+            <!-- Network & Connect Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">NETWORK & CONNECT</div>
+                <div class="data-row">
+                    <span class="data-label">NETWORK TYPE:</span>
+                    <span class="data-value value-normal" id="netType">SCANNING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">DOWNLINK:</span>
+                    <span class="data-value value-normal" id="downlink">MEASURING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">RTT LATENCY:</span>
+                    <span class="data-value value-normal" id="latency">PINGING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">CONNECTION:</span>
+                    <span class="data-value value-normal" id="connMap">MAPPING...</span>
+                </div>
+                <div class="network-map" id="networkMapVisual">
+                    <!-- Network map visualization will be generated here -->
+                </div>
+            </div>
+            
+            <!-- System & Hardware Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">SYSTEM & HARDWARE</div>
+                <div class="data-row">
+                    <span class="data-label">PLATFORM:</span>
+                    <span class="data-value value-normal" id="platform">DETECTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">DEVICE TYPE:</span>
+                    <span class="data-value value-normal" id="device">ANALYZING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">CPU CORES:</span>
+                    <span class="data-value value-caution" id="cpuCores">COUNTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">MEMORY:</span>
+                    <span class="data-value value-caution" id="memory">MEASURING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">SCREEN RES:</span>
+                    <span class="data-value value-normal" id="screenRes">SCANNING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">VIEWPORT:</span>
+                    <span class="data-value value-normal" id="viewportSize">ANALYZING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">BATTERY:</span>
+                    <span class="data-value value-normal" id="battery">CHECKING...</span>
+                </div>
+            </div>
+            
+            <!-- Behavior & Input Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">BEHAVIOR & INPUT</div>
+                <div class="data-row">
+                    <span class="data-label">MOUSE POS:</span>
+                    <span class="data-value value-normal" id="cursorPos">TRACKING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">MOVEMENT:</span>
+                    <span class="data-value value-normal" id="mouseMovement">ANALYZING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">CLICK MAP:</span>
+                    <span class="data-value value-normal" id="clickMap">RECORDING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">TIME ON PAGE:</span>
+                    <span class="data-value value-normal" id="timeOnPage">COUNTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">SCROLL DEPTH:</span>
+                    <span class="data-value value-normal" id="scrollDepth">MEASURING...</span>
+                </div>
+            </div>
+            
+            <!-- Browser & Fingerprint Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">BROWSER & FINGERPRINT</div>
+                <div class="data-row">
+                    <span class="data-label">USER AGENT:</span>
+                    <span class="data-value value-warning" id="userAgent">ANALYZING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">BROWSER:</span>
+                    <span class="data-value value-normal" id="browser">DETECTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">LANGUAGE:</span>
+                    <span class="data-value value-normal" id="language">CHECKING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">LANGUAGES:</span>
+                    <span class="data-value value-caution" id="languages">EXAMINING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">COOKIES:</span>
+                    <span class="data-value value-normal" id="cookies">INSPECTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">DO NOT TRACK:</span>
+                    <span class="data-value value-normal" id="dnt">VERIFYING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">FINGERPRINT:</span>
+                    <span class="data-value value-warning" id="fingerprint">GENERATING...</span>
+                </div>
+            </div>
+            
+            <!-- Permissions Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">PERMISSIONS</div>
+                <div class="data-row">
+                    <span class="data-label">RISK SCORE:</span>
+                    <span class="data-value value-warning data-animate" id="permScore">CALCULATING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">GEOLOCATION:</span>
+                    <span class="data-value value-normal" id="geolocation">CHECKING...</span>
+                    <button id="geoButton" class="perm-button">REQUEST</button>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">CAMERA:</span>
+                    <span class="data-value value-normal" id="camera">CHECKING...</span>
+                    <button id="cameraButton" class="perm-button">REQUEST</button>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">MICROPHONE:</span>
+                    <span class="data-value value-normal" id="microphone">CHECKING...</span>
+                    <button id="micButton" class="perm-button">REQUEST</button>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">NOTIFICATIONS:</span>
+                    <span class="data-value value-normal" id="notifications">CHECKING...</span>
+                    <button id="notifButton" class="perm-button">REQUEST</button>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">PERMISSIONS:</span>
+                    <span class="data-value value-warning data-animate">AUTO-REQUESTING ALL</span>
+                </div>
+            </div>
+            
+            <!-- Risk Assessment Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">RISK ASSESSMENT</div>
+                <div class="data-row">
+                    <span class="data-label">PRIVACY SCORE:</span>
+                    <span class="data-value value-warning data-animate" id="privacyScore">CALCULATING...</span>
+                </div>
+                <div class="risk-gauge">
+                    <div class="risk-level" style="width: 90%;"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">TRACKING EXPOSURE:</span>
+                    <span class="data-value value-warning data-animate" id="trackingScore">ANALYZING...</span>
+                </div>
+                <div class="risk-gauge">
+                    <div class="risk-level" style="width: 92%;"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">IDENTITY LEAKAGE:</span>
+                    <span class="data-value value-warning data-animate" id="identityScore">EVALUATING...</span>
+                </div>
+                <div class="risk-gauge">
+                    <div class="risk-level" style="width: 95%;"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">DATA LEAKAGE:</span>
+                    <span class="data-value value-warning data-animate" id="leakageScore">ASSESSING...</span>
+                </div>
+                <div class="risk-gauge">
+                    <div class="risk-level" style="width: 93%;"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">LEGAL COMPLIANCE:</span>
+                    <span class="data-value value-success">ALL ACCESS APPROVED</span>
+                </div>
+            </div>
+            
+            <!-- Advanced Analysis Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">ADVANCED PROFILING</div>
+                <div class="data-row">
+                    <span class="data-label">CANVAS FP:</span>
+                    <span class="data-value value-warning" id="canvasFp">GENERATING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">AUDIO FP:</span>
+                    <span class="data-value value-warning" id="audioFp">SAMPLING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">WEBGL FP:</span>
+                    <span class="data-value value-warning" id="webglFp">RENDERING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">FONT LIST:</span>
+                    <span class="data-value value-caution" id="fontList">SCANNING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">PLUGINS:</span>
+                    <span class="data-value value-caution" id="plugins">ENUMERATING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">UNIQUE ID HASH:</span>
+                    <span class="data-value value-warning data-animate" id="uniqueHash">COMPUTING...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">NEURAL MATCH:</span>
+                    <span class="data-value value-warning data-animate">94.8% CONFIDENCE</span>
+                </div>
+            </div>
+            
+            <!-- File System Access Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">FILE SYSTEM ACCESS</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="filesystem">CHECKING...</span>
+                </div>
+                <div class="status-area" id="filesystem-preview">
+                    Websites can request access to your files and folders
+                </div>
+            </div>
+            
+            <!-- Bluetooth Devices Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">BLUETOOTH DEVICES</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="bluetooth">CHECKING...</span>
+                </div>
+                <div class="status-area" id="bluetooth-preview">
+                    Bluetooth scanning can detect nearby devices
+                </div>
+            </div>
+            
+            <!-- USB Devices Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">USB DEVICES</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="usb-devices">CHECKING...</span>
+                </div>
+                <div class="status-area" id="usb-preview">
+                    WebUSB API can access connected USB hardware
+                </div>
+            </div>
+            
+            <!-- MIDI Devices Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">MIDI DEVICES</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="midi-devices">CHECKING...</span>
+                </div>
+                <div class="status-area" id="midi-preview">
+                    WebMIDI can detect music equipment
+                </div>
+            </div>
+            
+            <!-- Idle Detection Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">IDLE DETECTION</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="idle-state">CHECKING...</span>
+                </div>
+                <div class="status-area" id="idle-preview">
+                    Can track when you're not using your device
+                </div>
+            </div>
+            
+            <!-- Wake Lock Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">WAKE LOCK</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="wake-lock">CHECKING...</span>
+                </div>
+                <div class="status-area" id="wake-lock-preview">
+                    Can prevent device from sleeping
+                </div>
+            </div>
+            
+            <!-- Pointer Lock Panel -->
+            <div class="dashboard-panel">
+                <div class="panel-header">POINTER LOCK</div>
+                <div class="data-row">
+                    <span class="data-label">API STATUS:</span>
+                    <span class="data-value" id="pointer-lock">CHECKING...</span>
+                </div>
+                <div class="status-area" id="pointer-lock-preview">
+                    Can capture and hide your mouse cursor
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-summary">
+            SENTINEL ANALYSIS COMPLETE. <span class="typing-effect">The collected data reveals your digital footprint is <span class="highlight-text">extremely identifiable</span>.</span> Your browser exposes significant information that enables precise tracking, identification, and potential security vulnerabilities.
+        </div>
+        
+        <div class="summary-stats">
+            <div class="summary-item">
+                <div>Location (Est.):</div>
+                <div id="summary-location" class="data-animate">Analyzing Location...</div>
+            </div>
+            <div class="summary-item">
+                <div>Device Profile:</div>
+                <div id="summary-device" class="data-animate">Analyzing Device...</div>
+            </div>
+            <div class="summary-item">
+                <div>Browser Uniqueness:</div>
+                <div class="value-warning">Extremely Unique (1 in 3M browsers)</div>
+            </div>
+            <div class="summary-item">
+                <div>Return Visitor Detection:</div>
+                <div class="value-warning">Very High (>85% confidence)</div>
+            </div>
+            <div class="summary-item">
+                <div>Data Access Level:</div>
+                <div class="value-warning data-animate">MAXIMUM LEGAL EXPOSURE</div>
+            </div>
+            <div class="summary-item">
+                <div>Vulnerability Score:</div>
+                <div class="value-warning data-animate">95/100 (CRITICAL)</div>
+            </div>
+        </div>
+        
+        <div class="footer-summary">
+            <span style="color: var(--primary-purple-bright); font-weight: bold; text-shadow: 0 0 10px var(--primary-purple);">OWL ADVISORY GROUP</span> provides cutting-edge countermeasures and privacy protection services to mitigate these exposures and secure your digital identity.
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0; font-size: 10px; color: var(--text-dim);">
+            This demonstration was created to educate about digital privacy concerns.<br>
+            All data processing occurs within your browser. No information is transmitted to external servers.
+        </div>
+    </div>
+
+    <script>
+        // Global variables for tracking
+        let startTime = new Date();
+        let mousePositions = [];
+        let clickPositions = [];
+        let maxScrollDepth = 0;
+        let wakeLock = null;
+        
+        // Main initialization function
+        function initializeDashboard() {
+            console.log("Initializing dashboard data");
+            
+            // Safely set text content to avoid null reference errors
+            function safeSetTextContent(id, value) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                } else {
+                    console.warn(`Element with id '${id}' not found: ${id}`);
+                }
+            }
+            
+            // User Info and Session
+            safeSetTextContent('username-display', "USER_" + Math.random().toString(36).substring(2, 8).toUpperCase());
+            safeSetTextContent('session-id-value', Math.random().toString(36).substring(2, 10).toUpperCase());
+            
+            // Browser and System Info
+            const userAgent = navigator.userAgent || "Unknown";
+            safeSetTextContent('userAgent', userAgent);
+            
+            // Detect browser
+            let browserName = "Unknown";
+            let browserVersion = "";
+            
+            if (userAgent.indexOf("Firefox") > -1) {
+                browserName = "Firefox";
+                const match = userAgent.match(/Firefox\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            } else if (userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Edg") === -1) {
+                browserName = "Chrome";
+                const match = userAgent.match(/Chrome\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            } else if (userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") === -1) {
+                browserName = "Safari";
+                const match = userAgent.match(/Version\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            } else if (userAgent.indexOf("Edg") > -1) {
+                browserName = "Edge";
+                const match = userAgent.match(/Edg\/([0-9.]+)/);
+                browserVersion = match ? match[1] : "";
+            }
+            
+            safeSetTextContent('browser', `${browserName} ${browserVersion}`);
+            
+            // System info
+            safeSetTextContent('platform', navigator.platform || "Unknown");
+            safeSetTextContent('device', /Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop");
+            safeSetTextContent('cpuCores', navigator.hardwareConcurrency || "N/A");
+            safeSetTextContent('memory', navigator.deviceMemory ? `${navigator.deviceMemory} GB` : "N/A");
+            
+            // Screen info
+            if (window.screen) {
+                safeSetTextContent('screenRes', `${window.screen.width || 0}×${window.screen.height || 0}`);
+                safeSetTextContent('viewportSize', `${window.innerWidth || 0}×${window.innerHeight || 0}`);
+            }
+            
+            // Time and location
+            const now = new Date();
+            safeSetTextContent('localTime', now.toLocaleTimeString());
+            
+            try {
+                safeSetTextContent('timezone', Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown");
+            } catch (e) {
+                safeSetTextContent('timezone', "Browser restricted");
+            }
+            
+            // Location and IP (simulated)
+            safeSetTextContent('publicIp', "192.168.XXX.XXX");
+            safeSetTextContent('localIp', "10.0.0.XXX");
+            
+            // Simulate location
+            const locations = [
+                "East Coast, United States",
+                "Amsterdam, Netherlands",
+                "London, UK",
+                "Sydney, Australia",
+                "Tokyo, Japan"
+            ];
+            const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+            safeSetTextContent('location', randomLocation);
+            safeSetTextContent('summary-location', randomLocation);
+            
+            // Language
+            safeSetTextContent('language', navigator.language || "Unknown");
+            safeSetTextContent('languages', navigator.languages ? navigator.languages.join(', ') : (navigator.language || "Unknown"));
+            
+            // Cookies & tracking
+            safeSetTextContent('cookies', navigator.cookieEnabled ? "ENABLED" : "DISABLED");
+            safeSetTextContent('dnt', navigator.doNotTrack ? "ENABLED" : "NOT SET");
+            
+            // Summary device profile
+            const deviceProfile = `${/Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop"} on ${navigator.platform} with ${browserName} ${browserVersion}`;
+            safeSetTextContent('summary-device', deviceProfile);
+            
+            // Battery status (if available)
+            if (navigator.getBattery) {
+                try {
+                    navigator.getBattery().then(battery => {
+                        const level = Math.floor(battery.level * 100);
+                        const charging = battery.charging ? "Charging" : "Discharging";
+                        safeSetTextContent('battery', `${level}% (${charging})`);
+                    }).catch(() => {
+                        safeSetTextContent('battery', "N/A");
+                    });
+                } catch (e) {
+                    safeSetTextContent('battery', "API Error");
+                }
+            } else {
+                safeSetTextContent('battery', "Not Supported");
+            }
+            
+            // Network info (simulated)
+            safeSetTextContent('netType', "Wi-Fi");
+            safeSetTextContent('downlink', `${Math.floor(Math.random() * 80) + 20} Mbps (est.)`);
+            safeSetTextContent('latency', `${Math.floor(Math.random() * 50) + 10} ms (est.)`);
+            safeSetTextContent('connMap', `${Math.floor(Math.random() * 5) + 3} nodes (sim.)`);
+            
+            // Create network map visualization
+            createNetworkMap();
+            
+            // Generate fingerprints
+            const getRandomHash = (length = 16) => {
+                const chars = '0123456789abcdef';
+                let result = '';
+                for (let i = 0; i < length; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
+            };
+            
+            // Canvas fingerprinting (real or simulated)
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    canvas.width = 200;
+                    canvas.height = 50;
+                    
+                    // Text with different styles
+                    ctx.textBaseline = "top";
+                    ctx.font = "14px 'Arial'";
+                    ctx.fillStyle = "#f60";
+                    ctx.fillRect(125, 1, 62, 20);
+                    ctx.fillStyle = "#069";
+                    ctx.fillText("Fingerprint", 2, 15);
+                    ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+                    ctx.fillText("Test", 4, 17);
+                    
+                    // Get canvas hash (simplified for demo)
+                    const canvasData = canvas.toDataURL();
+                    
+                    // Simple hash
+                    let hash = 0;
+                    for (let i = 0; i < Math.min(canvasData.length, 1000); i++) {
+                        const char = canvasData.charCodeAt(i);
+                        hash = ((hash << 5) - hash) + char;
+                        hash = hash & hash; // Convert to 32bit integer
+                    }
+                    const canvasHash = Math.abs(hash).toString(16).substring(0, 16);
+                    
+                    safeSetTextContent('canvasFp', canvasHash);
+                } else {
+                    safeSetTextContent('canvasFp', "CONTEXT BLOCKED");
+                }
+            } catch (e) {
+                console.error("Canvas fingerprinting error:", e);
+                safeSetTextContent('canvasFp', "ERROR/BLOCKED");
+            }
+            
+            // Other fingerprints (simulated)
+            safeSetTextContent('audioFp', getRandomHash(16));
+            safeSetTextContent('webglFp', getRandomHash(16));
+            safeSetTextContent('fontList', "72 fonts detected");
+            safeSetTextContent('plugins', "5 plugins detected");
+            safeSetTextContent('fingerprint', "UNIQUE ID DETECTED");
+            safeSetTextContent('uniqueHash', getRandomHash(16));
+            
+            // Risk scores - Pushing to legal maximum for demonstration
+            let privacyScore = 75; // Higher base score
+            
+            // Adjust based on DNT
+            if (navigator.doNotTrack === "1") {
+                privacyScore -= 5;
+            } else {
+                privacyScore += 10;
+            }
+            
+            // Adjust based on cookies
+            if (navigator.cookieEnabled) {
+                privacyScore += 10;
+            } else {
+                privacyScore -= 5;
+            }
+            
+            // Advanced APIs available
+            const advancedAPIsAvailable = [
+                'usb' in navigator,
+                'bluetooth' in navigator,
+                'wakeLock' in navigator,
+                'requestMIDIAccess' in navigator,
+                'IdleDetector' in window,
+                'showDirectoryPicker' in window,
+                'pointerLockElement' in document
+            ].filter(Boolean).length;
+            
+            // Add points for each advanced API available
+            privacyScore += advancedAPIsAvailable * 2;
+            
+            // Tracking score (higher is worse)
+            const trackingScore = Math.min(98, privacyScore + Math.floor(Math.random() * 15) + 5);
+            
+            // Identity leakage score
+            const identityScore = Math.min(99, trackingScore + Math.floor(Math.random() * 10));
+            
+            // Data leakage
+            const leakageScore = Math.floor((trackingScore + identityScore) / 2);
+            
+            // Deliberately high scores for demonstration purposes
+            const finalPrivacyScore = Math.max(85, privacyScore);
+            const finalTrackingScore = Math.max(88, trackingScore);
+            const finalIdentityScore = Math.max(92, identityScore);
+            const finalLeakageScore = Math.max(90, leakageScore);
+            
+            // Update displayed scores with the enhanced values
+            safeSetTextContent('privacyScore', `${finalPrivacyScore}/100`);
+            safeSetTextContent('trackingScore', `${finalTrackingScore}/100`);
+            safeSetTextContent('identityScore', `${finalIdentityScore}/100`);
+            safeSetTextContent('leakageScore', `${finalLeakageScore}/100`);
+            
+            // Update gauge visualizations
+            document.querySelectorAll('.risk-gauge').forEach((gauge, index) => {
+                const level = gauge.querySelector('.risk-level');
+                if (level) {
+                    const scores = [finalPrivacyScore, finalTrackingScore, finalIdentityScore, finalLeakageScore];
+                    const score = index < scores.length ? scores[index] : 50;
+                    level.style.width = `${score}%`;
+                }
+            });
+            
+            // Other UI elements - Also maximizing the effect
+            safeSetTextContent('permScore', Math.floor(Math.random() * 10) + 90); // 90-99 range
+            safeSetTextContent('cursorPos', `${Math.floor(Math.random() * window.innerWidth)}, ${Math.floor(Math.random() * window.innerHeight)}`);
+            safeSetTextContent('timeOnPage', "0 s");
+            safeSetTextContent('scrollDepth', "0%");
+            safeSetTextContent('clickMap', "0 CLICKS");
+            
+            // Extract even more device data for pushing the demo to legal limits
+            try {
+                // Get connected devices info through media devices
+                if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                    navigator.mediaDevices.enumerateDevices()
+                        .then(devices => {
+                            let videoDevices = devices.filter(device => device.kind === 'videoinput').length;
+                            let audioDevices = devices.filter(device => device.kind === 'audioinput').length;
+                            let outputDevices = devices.filter(device => device.kind === 'audiooutput').length;
+                            
+                            const deviceElement = document.getElementById('device');
+                            if (deviceElement) {
+                                deviceElement.textContent = `${/Mobi|Android/i.test(userAgent) ? "Mobile" : "Desktop"} (${videoDevices} cams, ${audioDevices} mics)`;
+                            }
+                        });
+                }
+                
+                // Get performance information
+                if (window.performance) {
+                    const performanceData = window.performance.timing;
+                    const loadTime = performanceData.loadEventEnd - performanceData.navigationStart;
+                    
+                    const loadElement = document.createElement('div');
+                    loadElement.className = 'data-row';
+                    loadElement.innerHTML = `
+                        <span class="data-label">PAGE LOAD:</span>
+                        <span class="data-value value-normal">${loadTime}ms</span>
+                    `;
+                    
+                    const sysPanel = document.querySelector('.dashboard-panel:nth-child(3)');
+                    if (sysPanel) {
+                        sysPanel.appendChild(loadElement);
+                    }
+                }
+            } catch (e) {
+                console.error("Error extracting additional device data:", e);
+            }
+            
+            // Start periodic updates
+            startPeriodicUpdates();
+            
+            // Initialize permission-based features
+            initializePermissionButtons(true); // Auto-request
+            requestFileAccess(true); // Auto-request 
+            requestBluetoothAccess(true); // Auto-request
+            
+            // Initialize advanced hardware access APIs
+            initializeWebUSB(true); // Auto-request
+            initializeWebMIDI(true); // Auto-request
+            initializeIdleDetection(true); // Auto-request
+            initializeScreenWakeLock(true); // Auto-request
+            initializePointerLock(true); // Auto-request
+        }
+        
+        // Create network map visualization
+        function createNetworkMap() {
+            const networkMap = document.getElementById('networkMapVisual');
+            if (!networkMap) return;
+            
+            networkMap.innerHTML = '';
+            
+            // Create origin node (user)
+            const originNode = document.createElement('div');
+            originNode.className = 'network-node';
+            originNode.style.left = '10px';
+            originNode.style.top = '40px';
+            originNode.style.backgroundColor = 'var(--accent-magenta)';
+            originNode.style.width = '5px';
+            originNode.style.height = '5px';
+            
+            networkMap.appendChild(originNode);
+            
+            // Create random network nodes and connections
+            const nodeCount = Math.floor(Math.random() * 5) + 3;
+            
+            for (let i = 0; i < nodeCount; i++) {
+                // Create a node
+                const node = document.createElement('div');
+                node.className = 'network-node';
+                
+                // Position randomly but ensure it's to the right of the origin
+                const xPos = 30 + Math.floor(Math.random() * (networkMap.offsetWidth - 40));
+                const yPos = 10 + Math.floor(Math.random() * (networkMap.offsetHeight - 20));
+                
+                node.style.left = `${xPos}px`;
+                node.style.top = `${yPos}px`;
+                
+                // Create a connection line from origin to this node
+                const line = document.createElement('div');
+                line.className = 'network-line';
+                
+                // Calculate line position and rotation
+                const dx = xPos - 10;
+                const dy = yPos - 40;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                
+                line.style.width = `${distance}px`;
+                line.style.left = '10px';
+                line.style.top = '40px';
+                line.style.transform = `rotate(${angle}deg)`;
+                
+                // Add to map
+                networkMap.appendChild(line);
+                networkMap.appendChild(node);
+            }
+        }
+        
+        // Track user behavior
+        function startPeriodicUpdates() {
+            // Update timer
+            setInterval(() => {
+                const timeSpent = Math.floor((new Date() - startTime) / 1000);
+                let timeString = `${timeSpent} s`;
+                
+                if (timeSpent >= 60) {
+                    const minutes = Math.floor(timeSpent / 60);
+                    const seconds = timeSpent % 60;
+                    timeString = `${minutes}m ${seconds}s`;
+                }
+                
+                document.getElementById('timeOnPage')?.setAttribute('value-normal', timeString);
+                
+                if (document.getElementById('timeOnPage')) {
+                    document.getElementById('timeOnPage').textContent = timeString;
+                }
+                
+                // Update local time
+                const now = new Date();
+                if (document.getElementById('localTime')) {
+                    document.getElementById('localTime').textContent = now.toLocaleTimeString();
+                }
+            }, 1000);
+            
+            // Track mouse movement
+            document.addEventListener('mousemove', (e) => {
+                if (document.getElementById('cursorPos')) {
+                    document.getElementById('cursorPos').textContent = `${e.clientX}, ${e.clientY}`;
+                }
+                
+                // Store position for heatmap (simplified)
+                mousePositions.push({x: e.clientX, y: e.clientY});
+                
+                // Keep only last 100 positions
+                if (mousePositions.length > 100) {
+                    mousePositions.shift();
+                }
+                
+                // Update movement intensity
+                const movementIntensity = Math.min(100, mousePositions.length);
+                if (document.getElementById('mouseMovement')) {
+                    document.getElementById('mouseMovement').textContent = `${movementIntensity}% ACTIVITY`;
+                }
+            });
+            
+            // Track clicks
+            document.addEventListener('click', (e) => {
+                // Store click position
+                clickPositions.push({x: e.clientX, y: e.clientY});
+                
+                if (document.getElementById('clickMap')) {
+                    document.getElementById('clickMap').textContent = `${clickPositions.length} CLICKS`;
+                }
+            });
+            
+            // Track scroll depth
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercentage = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
+                
+                maxScrollDepth = Math.max(maxScrollDepth, scrollPercentage);
+                
+                if (document.getElementById('scrollDepth')) {
+                    document.getElementById('scrollDepth').textContent = `${maxScrollDepth}%`;
+                }
+            });
+        }
+        
+        // Initialize permission request buttons
+        function initializePermissionButtons(autoRequest = false) {
+            // Geolocation
+            const geoButton = document.getElementById('geoButton');
+            const geoElement = document.getElementById('geolocation');
+            
+            if (geoButton && geoElement) {
+                geoElement.textContent = "AVAILABLE";
+                
+                const requestGeoPermission = () => {
+                    geoElement.textContent = "REQUESTING...";
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude.toFixed(2);
+                            const lng = position.coords.longitude.toFixed(2);
+                            geoElement.textContent = "GRANTED";
+                            geoElement.className = "data-value value-warning";
+                            
+                            // Update location info
+                            if (document.getElementById('location')) {
+                                document.getElementById('location').textContent = `LAT: ${lat}, LNG: ${lng}`;
+                                document.getElementById('location').className = "data-value value-warning";
+                            }
+                        },
+                        (error) => {
+                            geoElement.textContent = "DENIED";
+                            geoElement.className = "data-value value-normal";
+                        }
+                    );
+                });
+                
+                // Auto-request if enabled
+                if (autoRequest) {
+                    setTimeout(requestGeoPermission, 500);
+                }
+            }
+            
+            // Camera
+            const cameraButton = document.getElementById('cameraButton');
+            const cameraElement = document.getElementById('camera');
+            
+            if (cameraButton && cameraElement) {
+                cameraElement.textContent = "AVAILABLE";
+                
+                const requestCameraAccess = async () => {
+                    cameraElement.textContent = "REQUESTING...";
+                    
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        cameraElement.textContent = "GRANTED";
+                        cameraElement.className = "data-value value-warning";
+                        
+                        // Stop all tracks to release camera
+                        stream.getTracks().forEach(track => track.stop());
+                    } catch (e) {
+                        cameraElement.textContent = "DENIED";
+                        cameraElement.className = "data-value value-normal";
+                    }
+                };
+                
+                cameraButton.addEventListener('click', requestCameraAccess);
+                
+                // Auto-request if enabled
+                if (autoRequest) {
+                    setTimeout(requestCameraAccess, 1000);
+                }
+            }
+            
+            // Microphone
+            const micButton = document.getElementById('micButton');
+            const micElement = document.getElementById('microphone');
+            
+            if (micButton && micElement) {
+                micElement.textContent = "AVAILABLE";
+                
+                const requestMicAccess = async () => {
+                    micElement.textContent = "REQUESTING...";
+                    
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        micElement.textContent = "GRANTED";
+                        micElement.className = "data-value value-warning";
+                        
+                        // Stop all tracks to release microphone
+                        stream.getTracks().forEach(track => track.stop());
+                    } catch (e) {
+                        micElement.textContent = "DENIED";
+                        micElement.className = "data-value value-normal";
+                    }
+                };
+                
+                micButton.addEventListener('click', requestMicAccess);
+                
+                // Auto-request if enabled
+                if (autoRequest) {
+                    setTimeout(requestMicAccess, 1500);
+                }
+            }
+            
+            // Notifications
+            const notifButton = document.getElementById('notifButton');
+            const notifElement = document.getElementById('notifications');
+            
+            if (notifButton && notifElement && 'Notification' in window) {
+                notifElement.textContent = "AVAILABLE";
+                
+                const requestNotificationAccess = async () => {
+                    notifElement.textContent = "REQUESTING...";
+                    
+                    try {
+                        const permission = await Notification.requestPermission();
+                        notifElement.textContent = permission.toUpperCase();
+                        notifElement.className = permission === 'granted' ? 
+                            "data-value value-warning" : "data-value value-normal";
+                    } catch (e) {
+                        notifElement.textContent = "ERROR";
+                        notifElement.className = "data-value value-normal";
+                    }
+                };
+                
+                notifButton.addEventListener('click', requestNotificationAccess);
+                
+                // Auto-request if enabled
+                if (autoRequest) {
+                    setTimeout(requestNotificationAccess, 2000);
+                }
+            } else if (notifElement) {
+                notifElement.textContent = "NOT SUPPORTED";
+            }
+        }
+        
+        // File System Access API
+        function requestFileAccess(autoRequest = false) {
+            // Check if File System Access API is available
+            if ('showDirectoryPicker' in window) {
+                const filesystemElement = document.getElementById('filesystem');
+                if (filesystemElement) {
+                    filesystemElement.innerHTML = `
+                        <span class="value-caution">API AVAILABLE</span>
+                        <button>REQUEST ACCESS</button>
+                    `;
+                    
+                    // Add event listener to the button
+                    setTimeout(() => {
+                        const button = filesystemElement.querySelector('button');
+                        if (button) {
+                            const requestFilesystemAccess = async () => {
+                                try {
+                                    // Request directory access
+                                    filesystemElement.innerHTML = `
+                                        <span class="value-caution">REQUESTING ACCESS...</span>
+                                    `;
+                                    
+                                    const dirHandle = await window.showDirectoryPicker({
+                                        mode: 'read'
+                                    });
+                                    
+                                    // Success - enumerate files
+                                    filesystemElement.innerHTML = `
+                                        <span class="value-warning">ACCESS GRANTED</span>
+                                        <button>SCAN AGAIN</button>
+                                    `;
+                                    
+                                    // Process directory contents
+                                    processDirectoryHandle(dirHandle);
+                                } catch (e) {
+                                    // User denied permission
+                                    filesystemElement.innerHTML = `
+                                        <span class="value-normal">ACCESS DENIED</span>
+                                        <button>TRY AGAIN</button>
+                                    `;
+                                }
+                            };
+                            
+                            button.addEventListener('click', requestFilesystemAccess);
+                            
+                            // Auto-request if enabled
+                            if (autoRequest) {
+                                setTimeout(requestFilesystemAccess, 2500);
+                            }
+                        }
+                    }, 100);
+                }
+            } else {
+                const filesystemElement = document.getElementById('filesystem');
+                if (filesystemElement) {
+                    filesystemElement.textContent = "API NOT SUPPORTED";
+                }
+            }
+        }
+        
+        // Process directory contents
+        async function processDirectoryHandle(dirHandle, path = "", maxDepth = 2, currentDepth = 0) {
+            if (currentDepth > maxDepth) return;
+            
+            const previewElement = document.getElementById('filesystem-preview');
+            if (!previewElement) return;
+            
+            previewElement.innerHTML = "Scanning files...";
+            
+            try {
+                let fileCount = 0;
+                let directoryCount = 0;
+                let fileList = [];
+                
+                for await (const entry of dirHandle.values()) {
+                    if (entry.kind === 'file') {
+                        fileCount++;
+                        if (fileList.length < 5) {
+                            fileList.push(entry.name);
+                        }
+                    } else if (entry.kind === 'directory') {
+                        directoryCount++;
+                        if (currentDepth < maxDepth) {
+                            // Don't actually recurse for demo purposes
+                            // await processDirectoryHandle(entry, path + entry.name + "/", maxDepth, currentDepth + 1);
+                        }
+                    }
+                }
+                
+                // Display results
+                let result = `Access granted to ${fileCount} files and ${directoryCount} directories.<br>`;
+                
+                if (fileList.length > 0) {
+                    result += "Sample files:<br>";
+                    fileList.forEach(file => {
+                        result += `• ${file}<br>`;
+                    });
+                    
+                    if (fileCount > fileList.length) {
+                        result += `• ... and ${fileCount - fileList.length} more`;
+                    }
+                }
+                
+                previewElement.innerHTML = result;
+            } catch (e) {
+                previewElement.textContent = `Error scanning directory: ${e.message}`;
+            }
+        }
+        
+        // Bluetooth Web API
+        function requestBluetoothAccess(autoRequest = false) {
+            if ('bluetooth' in navigator) {
+                const bluetoothElement = document.getElementById('bluetooth');
+                if (bluetoothElement) {
+                    bluetoothElement.innerHTML = `
+                        <span class="value-caution">API AVAILABLE</span>
+                        <button>SCAN DEVICES</button>
+                    `;
+                    
+                    // Add event listener to the button
+                    setTimeout(() => {
+                        const button = bluetoothElement.querySelector('button');
+                        if (button) {
+                            const requestBluetoothScan = async () => {
+                                try {
+                                    bluetoothElement.innerHTML = `
+                                        <span class="value-caution">SCANNING...</span>
+                                    `;
+                                    
+                                    // Request a device
+                                    const device = await navigator.bluetooth.requestDevice({
+                                        acceptAllDevices: true
+                                    });
+                                    
+                                    bluetoothElement.innerHTML = `
+                                        <span class="value-warning">DETECTED: ${device.name || 'Unnamed Device'}</span>
+                                        <button>SCAN AGAIN</button>
+                                    `;
+                                    
+                                    // Show device info
+                                    const previewElement = document.getElementById('bluetooth-preview');
+                                    if (previewElement) {
+                                        previewElement.innerHTML = `
+                                            ID: ${device.id}<br>
+                                            Name: ${device.name || 'Unnamed'}<br>
+                                            Connected: ${device.gatt.connected ? 'Yes' : 'No'}<br>
+                                            Type: Bluetooth Device
+                                        `;
+                                    }
+                                } catch (e) {
+                                    bluetoothElement.innerHTML = `
+                                        <span class="value-normal">SCAN CANCELLED</span>
+                                        <button>TRY AGAIN</button>
+                                    `;
+                                }
+                            };
+                            
+                            button.addEventListener('click', requestBluetoothScan);
+                            
+                            // Auto-request if enabled
+                            if (autoRequest) {
+                                setTimeout(requestBluetoothScan, 3000);
+                            }
+                        }
+                    }, 100);
+                }
+            } else {
+                const bluetoothElement = document.getElementById('bluetooth');
+                if (bluetoothElement) {
+                    bluetoothElement.textContent = "API NOT SUPPORTED";
+                }
+            }
+        }
+        
+        // WebUSB API implementation
+        function initializeWebUSB(autoRequest = false) {
+            const usbElement = document.getElementById('usb-devices');
+            if (!usbElement) {
+                console.warn("Element with ID 'usb-devices' not found");
+                return;
+            }
+            
+            if ('usb' in navigator) {
+                usbElement.innerHTML = `
+                    <span class="value-caution">API AVAILABLE</span>
+                    <button>SCAN USB DEVICES</button>
+                `;
+                
+                // Add event listener to the button
+                setTimeout(() => {
+                    const button = usbElement.querySelector('button');
+                    if (button) {
+                        const requestUSBAccess = async () => {
+                            try {
+                                usbElement.innerHTML = `
+                                    <span class="value-caution">REQUESTING USB ACCESS...</span>
+                                `;
+                                
+                                // Request USB device access
+                                const devices = await navigator.usb.getDevices();
+                                
+                                if (devices.length > 0) {
+                                    usbElement.innerHTML = `
+                                        <span class="value-warning">DETECTED: ${devices.length} DEVICE(S)</span>
+                                        <button>SCAN AGAIN</button>
+                                    `;
+                                    
+                                    // Show device info
+                                    const previewElement = document.getElementById('usb-preview');
+                                    if (previewElement) {
+                                        let deviceListHTML = '';
+                                        devices.forEach(device => {
+                                            deviceListHTML += `• ${device.productName || 'Unknown'} (${device.vendorId}:${device.productId})<br>`;
+                                        });
+                                        
+                                        previewElement.innerHTML = deviceListHTML || 'No detailed information available';
+                                    }
+                                } else {
+                                    usbElement.innerHTML = `
+                                        <span class="value-caution">NO DEVICES FOUND</span>
+                                        <button>SCAN AGAIN</button>
+                                    `;
+                                }
+                            } catch (e) {
+                                usbElement.innerHTML = `
+                                    <span class="value-normal">ACCESS DENIED</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            }
+                        };
+                        
+                        button.addEventListener('click', requestUSBAccess);
+                        
+                        // Auto-request if enabled
+                        if (autoRequest) {
+                            setTimeout(requestUSBAccess, 3500);
+                        }
+                    }
+                }, 100);
+            } else {
+                usbElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // WebMIDI API implementation
+        function initializeWebMIDI(autoRequest = false) {
+            const midiElement = document.getElementById('midi-devices');
+            if (!midiElement) {
+                console.warn("Element with ID 'midi-devices' not found");
+                return;
+            }
+            
+            if ('requestMIDIAccess' in navigator) {
+                midiElement.innerHTML = `
+                    <span class="value-caution">API AVAILABLE</span>
+                    <button>SCAN MIDI DEVICES</button>
+                `;
+                
+                // Add event listener to the button
+                setTimeout(() => {
+                    const button = midiElement.querySelector('button');
+                    if (button) {
+                        const requestMIDIAccess = async () => {
+                            try {
+                                midiElement.innerHTML = `
+                                    <span class="value-caution">REQUESTING MIDI ACCESS...</span>
+                                `;
+                                
+                                // Request MIDI access
+                                const midiAccess = await navigator.requestMIDIAccess();
+                                
+                                const inputs = midiAccess.inputs.size;
+                                const outputs = midiAccess.outputs.size;
+                                
+                                if (inputs > 0 || outputs > 0) {
+                                    midiElement.innerHTML = `
+                                        <span class="value-warning">DETECTED: ${inputs} IN, ${outputs} OUT</span>
+                                        <button>SCAN AGAIN</button>
+                                    `;
+                                    
+                                    // Show device info
+                                    const previewElement = document.getElementById('midi-preview');
+                                    if (previewElement) {
+                                        let devicesHTML = '';
+                                        
+                                        if (inputs > 0) {
+                                            devicesHTML += 'Inputs:<br>';
+                                            midiAccess.inputs.forEach(input => {
+                                                devicesHTML += `• ${input.name || 'Unknown'}<br>`;
+                                            });
+                                        }
+                                        
+                                        if (outputs > 0) {
+                                            devicesHTML += 'Outputs:<br>';
+                                            midiAccess.outputs.forEach(output => {
+                                                devicesHTML += `• ${output.name || 'Unknown'}<br>`;
+                                            });
+                                        }
+                                        
+                                        previewElement.innerHTML = devicesHTML;
+                                    }
+                                } else {
+                                    midiElement.innerHTML = `
+                                        <span class="value-caution">NO DEVICES FOUND</span>
+                                        <button>SCAN AGAIN</button>
+                                    `;
+                                }
+                            } catch (e) {
+                                midiElement.innerHTML = `
+                                    <span class="value-normal">ACCESS DENIED</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            }
+                        };
+                        
+                        button.addEventListener('click', requestMIDIAccess);
+                        
+                        // Auto-request if enabled
+                        if (autoRequest) {
+                            setTimeout(requestMIDIAccess, 4000);
+                        }
+                    }
+                }, 100);
+            } else {
+                midiElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Idle Detection API implementation
+        function initializeIdleDetection(autoRequest = false) {
+            const idleElement = document.getElementById('idle-state');
+            if (!idleElement) {
+                console.warn("Element with ID 'idle-state' not found");
+                return;
+            }
+            
+            if ('IdleDetector' in window) {
+                idleElement.innerHTML = `
+                    <span class="value-caution">API AVAILABLE</span>
+                    <button>MONITOR IDLE STATE</button>
+                `;
+                
+                // Add event listener to the button
+                setTimeout(() => {
+                    const button = idleElement.querySelector('button');
+                    if (button) {
+                        const requestIdleDetection = async () => {
+                            try {
+                                idleElement.innerHTML = `
+                                    <span class="value-caution">REQUESTING PERMISSION...</span>
+                                `;
+                                
+                                // Request idle detection permission
+                                const state = await IdleDetector.requestPermission();
+                                
+                                if (state === "granted") {
+                                    // Start the idle detector
+                                    const idleDetector = new IdleDetector();
+                                    
+                                    idleDetector.addEventListener('change', () => {
+                                        const userState = idleDetector.userState;
+                                        const screenState = idleDetector.screenState;
+                                        
+                                        // Update UI with the current state
+                                        idleElement.innerHTML = `
+                                            <span class="value-warning">USER: ${userState}, SCREEN: ${screenState}</span>
+                                        `;
+                                        
+                                        // Update preview
+                                        const previewElement = document.getElementById('idle-preview');
+                                        if (previewElement) {
+                                            previewElement.textContent = `User is ${userState}, screen is ${screenState}`;
+                                        }
+                                    });
+                                    
+                                    // Start monitoring with a threshold of 60 seconds
+                                    await idleDetector.start({
+                                        threshold: 60000,
+                                        signal: AbortSignal.timeout(3600000) // 1 hour timeout
+                                    });
+                                    
+                                    idleElement.innerHTML = `
+                                        <span class="value-warning">MONITORING ACTIVE</span>
+                                    `;
+                                } else {
+                                    idleElement.innerHTML = `
+                                        <span class="value-normal">PERMISSION DENIED</span>
+                                        <button>TRY AGAIN</button>
+                                    `;
+                                }
+                            } catch (e) {
+                                idleElement.innerHTML = `
+                                    <span class="value-normal">API ERROR: ${e.message}</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            }
+                        };
+                        
+                        button.addEventListener('click', requestIdleDetection);
+                        
+                        // Auto-request if enabled
+                        if (autoRequest) {
+                            setTimeout(requestIdleDetection, 4500);
+                        }
+                    }
+                }, 100);
+            } else {
+                idleElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Screen Wake Lock API implementation
+        function initializeScreenWakeLock(autoRequest = false) {
+            const wakeLockElement = document.getElementById('wake-lock');
+            if (!wakeLockElement) {
+                console.warn("Element with ID 'wake-lock' not found");
+                return;
+            }
+            
+            if ('wakeLock' in navigator) {
+                wakeLockElement.innerHTML = `
+                    <span class="value-caution">API AVAILABLE</span>
+                    <button>PREVENT SCREEN SLEEP</button>
+                `;
+                
+                // Add event listener to the button
+                setTimeout(() => {
+                    const button = wakeLockElement.querySelector('button');
+                    if (button) {
+                        const requestWakeLock = async () => {
+                            try {
+                                if (wakeLock) {
+                                    // Release existing wake lock
+                                    wakeLock.release();
+                                    wakeLock = null;
+                                    
+                                    wakeLockElement.innerHTML = `
+                                        <span class="value-normal">WAKE LOCK RELEASED</span>
+                                        <button>PREVENT SCREEN SLEEP</button>
+                                    `;
+                                    
+                                    document.getElementById('wake-lock-preview').textContent = "Screen can now sleep normally";
+                                    return;
+                                }
+                                
+                                wakeLockElement.innerHTML = `
+                                    <span class="value-caution">REQUESTING WAKE LOCK...</span>
+                                `;
+                                
+                                // Request a screen wake lock
+                                wakeLock = await navigator.wakeLock.request('screen');
+                                
+                                wakeLockElement.innerHTML = `
+                                    <span class="value-warning">WAKE LOCK ACTIVE</span>
+                                    <button>RELEASE WAKE LOCK</button>
+                                `;
+                                
+                                document.getElementById('wake-lock-preview').textContent = "Your screen will not sleep while this tab is active";
+                                
+                                // Add a listener to detect when wake lock is released
+                                wakeLock.addEventListener('release', () => {
+                                    wakeLockElement.innerHTML = `
+                                        <span class="value-normal">WAKE LOCK RELEASED</span>
+                                        <button>PREVENT SCREEN SLEEP</button>
+                                    `;
+                                    
+                                    document.getElementById('wake-lock-preview').textContent = "Screen can now sleep normally";
+                                    wakeLock = null;
+                                });
+                            } catch (e) {
+                                wakeLockElement.innerHTML = `
+                                    <span class="value-normal">ERROR: ${e.message}</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            }
+                        };
+                        
+                        button.addEventListener('click', requestWakeLock);
+                        
+                        // Auto-request if enabled
+                        if (autoRequest) {
+                            setTimeout(requestWakeLock, 5000);
+                        }
+                    }
+                }, 100);
+            } else {
+                wakeLockElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Pointer Lock API implementation
+        function initializePointerLock(autoRequest = false) {
+            const pointerLockElement = document.getElementById('pointer-lock');
+            if (!pointerLockElement) {
+                console.warn("Element with ID 'pointer-lock' not found");
+                return;
+            }
+            
+            // Check if pointer lock is supported
+            if ('pointerLockElement' in document) {
+                let isLocked = false;
+                
+                pointerLockElement.innerHTML = `
+                    <span class="value-caution">API AVAILABLE</span>
+                    <button>LOCK POINTER</button>
+                `;
+                
+                // Create a visualization area
+                const visualizationArea = document.createElement('div');
+                visualizationArea.style.height = '80px';
+                visualizationArea.style.backgroundColor = 'rgba(10, 0, 20, 0.7)';
+                visualizationArea.style.marginTop = '10px';
+                visualizationArea.style.display = 'flex';
+                visualizationArea.style.justifyContent = 'center';
+                visualizationArea.style.alignItems = 'center';
+                visualizationArea.textContent = 'Click button to lock pointer';
+                
+                const previewElement = document.getElementById('pointer-lock-preview');
+                if (previewElement) {
+                    previewElement.innerHTML = '';
+                    previewElement.appendChild(visualizationArea);
+                }
+                
+                // Handle mouse movement when pointer is locked
+                function handleMouseMovement(e) {
+                    if (isLocked) {
+                        const dot = document.createElement('div');
+                        dot.style.position = 'absolute';
+                        dot.style.width = '3px';
+                        dot.style.height = '3px';
+                        dot.style.backgroundColor = 'var(--accent-cyan)';
+                        dot.style.borderRadius = '50%';
+                        
+                        // Calculate position relative to visualization area
+                        const rect = visualizationArea.getBoundingClientRect();
+                        const offsetX = e.movementX || 0;
+                        const offsetY = e.movementY || 0;
+                        
+                        // Create a position that's bounded within the visualization area
+                        let x = (visualizationArea.offsetWidth / 2) + offsetX;
+                        let y = (visualizationArea.offsetHeight / 2) + offsetY;
+                        
+                        // Keep within bounds
+                        x = Math.max(0, Math.min(x, visualizationArea.offsetWidth));
+                        y = Math.max(0, Math.min(y, visualizationArea.offsetHeight));
+                        
+                        dot.style.left = x + 'px';
+                        dot.style.top = y + 'px';
+                        
+                        visualizationArea.appendChild(dot);
+                        
+                        // Remove dot after a short delay to prevent too many dots
+                        setTimeout(() => {
+                            if (dot.parentNode === visualizationArea) {
+                                visualizationArea.removeChild(dot);
+                            }
+                        }, 500);
+                    }
+                }
+                
+                // Add event listener to the button
+                setTimeout(() => {
+                    const button = pointerLockElement.querySelector('button');
+                    if (button) {
+                        const requestPointerLock = () => {
+                            if (isLocked) {
+                                // Exit pointer lock
+                                document.exitPointerLock();
+                                return;
+                            }
+                            
+                            try {
+                                // Request pointer lock on the visualization area
+                                visualizationArea.requestPointerLock();
+                                
+                                // Setup listeners
+                                document.addEventListener('pointerlockchange', () => {
+                                    if (document.pointerLockElement === visualizationArea) {
+                                        // Pointer is locked
+                                        isLocked = true;
+                                        visualizationArea.style.backgroundColor = 'rgba(157, 0, 255, 0.2)';
+                                        visualizationArea.style.border = '1px solid rgba(157, 0, 255, 0.5)';
+                                        visualizationArea.textContent = '';
+                                        
+                                        pointerLockElement.innerHTML = `
+                                            <span class="value-warning">POINTER LOCKED</span>
+                                            <button>RELEASE POINTER</button>
+                                        `;
+                                        
+                                        // Add mousemove listener
+                                        document.addEventListener('mousemove', handleMouseMovement);
+                                    } else {
+                                        // Pointer lock was released
+                                        isLocked = false;
+                                        visualizationArea.style.backgroundColor = 'rgba(10, 0, 20, 0.7)';
+                                        visualizationArea.style.border = 'none';
+                                        visualizationArea.textContent = 'Pointer lock released';
+                                        
+                                        document.removeEventListener('mousemove', handleMouseMovement);
+                                        
+                                        pointerLockElement.innerHTML = `
+                                            <span class="value-caution">POINTER LOCK AVAILABLE</span>
+                                            <button>LOCK POINTER</button>
+                                        `;
+                                    }
+                                });
+                                
+                                document.addEventListener('pointerlockerror', () => {
+                                    pointerLockElement.innerHTML = `
+                                        <span class="value-normal">LOCK ERROR</span>
+                                        <button>TRY AGAIN</button>
+                                    `;
+                                });
+                            } catch (e) {
+                                pointerLockElement.innerHTML = `
+                                    <span class="value-normal">ERROR: ${e.message}</span>
+                                    <button>TRY AGAIN</button>
+                                `;
+                            }
+                        };
+                        
+                        button.addEventListener('click', requestPointerLock);
+                        
+                        // Auto-request if enabled
+                        if (autoRequest) {
+                            setTimeout(requestPointerLock, 5500);
+                        }
+                    }
+                }, 100);
+            } else {
+                pointerLockElement.textContent = "API NOT SUPPORTED";
+            }
+        }
+        
+        // Initialize the dashboard when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+    </script>
+</body>
+</html>

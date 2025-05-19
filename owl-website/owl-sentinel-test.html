@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWL Sentinel - Test Version</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .test-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px;
+            width: 100%;
+            font-family: monospace;
+            z-index: 9999;
+        }
+        .log-message {
+            margin: 2px 0;
+        }
+        .test-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enterprise Header with Secure Connection Indicator -->
+    <div class="enterprise-header">
+        <div class="header-logo">
+            <img src="img/owl-badge.png" alt="OWL Security" class="header-badge">
+            <h1 class="header-title">OWL Sentinel</h1>
+        </div>
+        <div class="connection-status">
+            <div class="connection-indicator secure"></div>
+            <span>SECURE CONNECTION</span>
+        </div>
+    </div>
+
+    <!-- Landing Screen -->
+    <div id="landing-screen" class="screen active">
+        <div class="auth-container">
+            <!-- OWL Branding -->
+            <div class="auth-branding">
+                <img src="img/owl-badge.png" alt="OWL Security" class="auth-logo">
+                <h2 class="auth-header cyberpunk-header">OWL Sentinel</h2>
+                <p>Advanced Digital Exposure Analysis</p>
+            </div>
+            
+            <div class="disclaimer-content enterprise-terminal">
+                <p>All data processing occurs locally in your browser. No information is transmitted to external servers unless explicitly requested. This tool demonstrates the standard data collection capabilities available to any website you visit.</p>
+                <p>The OWL Sentinel system serves as an educational demonstration of digital exposure vectors. By proceeding, you authorize the system to collect and analyze data accessible through standard browser APIs.</p>
+                <p>This system will identify and display what websites can legally collect from your browser without notification. No data persists beyond your session.</p>
+            </div>
+            
+            <div class="encryption-indicator">
+                <span class="encryption-dot"></span> LOCAL PROCESSING: NO SERVER TRANSMISSION
+            </div>
+
+            <!-- Authorize Button -->
+            <button id="start-scan-button" class="cyber-button">
+                <span class="button-content">AUTHORIZE SCAN</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Assessment Screen -->
+    <div id="assessment-screen" class="screen hidden">
+        <div class="assessment-header">
+            <h2 class="assessment-title">System Vulnerability Assessment</h2>
+            <p class="assessment-subtitle">Analyzing your digital exposure footprint...</p>
+        </div>
+
+        <div class="progress-container">
+            <div id="assessment-progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="assessment-progress-text" class="progress-text">0%</p>
+
+        <div class="scan-log-container">
+            <div id="scan-log"></div>
+        </div>
+
+        <button id="continue-button" class="cyber-button disabled">
+            <span class="button-content">CONTINUE TO DASHBOARD</span>
+        </button>
+    </div>
+
+    <!-- Dashboard Screen (Data Collection Starts Here) -->
+    <div id="dashboard-screen" class="screen hidden">
+        <div class="dashboard-layout">
+            <div class="dashboard-header-section">
+                <h1>OWL Sentinel Dashboard</h1>
+                <img src="img/owl-badge.png" alt="OWL Security" class="owl-scanner">
+            </div>
+            
+            <div class="local-processing-notice">
+                ✓ All analysis performed locally in your browser - No data sent to servers
+            </div>
+
+            <!-- Executive Summary Panel -->
+            <div class="panel executive-summary">
+                <h2 class="panel-header">Executive Risk Summary</h2>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Identity Exposure Score</div>
+                        <div id="summary-identity-exposure" class="summary-value large severity-high">-</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Tracking Potential Score</div>
+                        <div id="summary-tracking-potential" class="summary-value large severity-high">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Grid -->
+            <div class="data-grid">
+                <!-- Identity & Location Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">Identity & Location</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">User Identifier</div>
+                            <div id="username-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Session ID</div>
+                            <div id="session-id-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">Local Time</div>
+                            <div id="local-time-value" class="data-value">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Browser Info Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">Browser Information</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">Browser</div>
+                            <div id="browser-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">User Agent</div>
+                            <div id="user-agent-value" class="data-value">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Panel for Debugging -->
+    <div class="test-panel">
+        <button id="test-log-button">Show Data Collection State</button>
+        <button id="test-collect-button">Force Collect</button>
+        <div id="test-log"></div>
+    </div>
+
+    <script>
+        // Global state variables
+        window.appState = {
+            currentScreen: 'landing',
+            dataCollectionActive: false,
+            assessmentProgress: 0,
+            startTime: new Date(),
+            assessmentComplete: false
+        };
+        
+        // Log function
+        function log(message) {
+            console.log('[Test] ' + message);
+            const testLog = document.getElementById('test-log');
+            const logElement = document.createElement('div');
+            logElement.className = 'log-message';
+            logElement.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            testLog.appendChild(logElement);
+            
+            // Limit log entries
+            if (testLog.childNodes.length > 10) {
+                testLog.removeChild(testLog.firstChild);
+            }
+        }
+        
+        // Set up screen transitions
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOM loaded, initializing test environment');
+            
+            // Get screen elements
+            const landingScreen = document.getElementById('landing-screen');
+            const assessmentScreen = document.getElementById('assessment-screen');
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            
+            // Get buttons
+            const startScanButton = document.getElementById('start-scan-button');
+            const continueButton = document.getElementById('continue-button');
+            const testLogButton = document.getElementById('test-log-button');
+            const testCollectButton = document.getElementById('test-collect-button');
+            
+            // Start scan button - transition to assessment
+            startScanButton.addEventListener('click', function() {
+                log('Start scan button clicked');
+                
+                // Update app state
+                window.appState.currentScreen = 'assessment';
+                
+                // Hide landing screen, show assessment screen
+                landingScreen.classList.remove('active');
+                landingScreen.classList.add('hidden');
+                assessmentScreen.classList.remove('hidden');
+                assessmentScreen.classList.add('active');
+                
+                // Start progress animation
+                let progress = 0;
+                const progressBar = document.getElementById('assessment-progress-bar');
+                const progressText = document.getElementById('assessment-progress-text');
+                const scanLog = document.getElementById('scan-log');
+                
+                // Update initial scan log
+                scanLog.innerHTML = `<div class="log-entry">
+                    <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                    <span class="message">SCAN INITIALIZED. PROCESSING...</span>
+                </div>`;
+                
+                // Progress messages
+                const progressMessages = [
+                    "Initializing scan environment...",
+                    "Scanning network interfaces...",
+                    "Analyzing browser configuration...",
+                    "Checking hardware specifications...",
+                    "Detecting installed plugins...",
+                    "Analyzing system fingerprint...",
+                    "Mapping potential vulnerabilities...",
+                    "Generating risk assessment model...",
+                    "Preparing dashboard visualization...",
+                    "Scan complete. Results ready for review."
+                ];
+                
+                // Animation interval
+                const interval = setInterval(() => {
+                    // Increment progress
+                    progress += 1;
+                    window.appState.assessmentProgress = progress;
+                    
+                    // Update progress bar
+                    progressBar.style.width = `${progress}%`;
+                    progressText.textContent = `${progress}%`;
+                    
+                    // Add log entries at key points
+                    if (progress % 10 === 0) {
+                        const messageIndex = Math.floor(progress / 10) - 1;
+                        if (messageIndex >= 0 && messageIndex < progressMessages.length) {
+                            scanLog.innerHTML += `<div class="log-entry">
+                                <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                                <span class="message">${progressMessages[messageIndex]}</span>
+                            </div>`;
+                            scanLog.scrollTop = scanLog.scrollHeight;
+                            log(`Assessment progress: ${progress}%`);
+                        }
+                    }
+                    
+                    // Complete assessment at 100%
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        window.appState.assessmentComplete = true;
+                        log('Assessment complete');
+                        
+                        // Enable continue button
+                        continueButton.classList.remove('disabled');
+                        continueButton.classList.add('ready-pulse');
+                        
+                        // Final log entry
+                        scanLog.innerHTML += `<div class="log-entry highlight">
+                            <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                            <span class="message">ASSESSMENT COMPLETE. DASHBOARD READY.</span>
+                        </div>`;
+                        scanLog.scrollTop = scanLog.scrollHeight;
+                    }
+                }, 50);
+            });
+            
+            // Continue button - transition to dashboard
+            continueButton.addEventListener('click', function() {
+                log('Continue button clicked');
+                
+                // Update app state
+                window.appState.currentScreen = 'dashboard';
+                
+                // Hide assessment screen, show dashboard screen
+                assessmentScreen.classList.remove('active');
+                assessmentScreen.classList.add('hidden');
+                dashboardScreen.classList.remove('hidden');
+                dashboardScreen.classList.add('active');
+                
+                // ** MOST IMPORTANT PART: Start data collection **
+                window.appState.dataCollectionActive = true;
+                log('*** DATA COLLECTION ACTIVATED ***');
+                
+                // Actually collect some data now that we're authorized
+                collectBrowserData();
+            });
+            
+            // Test log button - show current state
+            testLogButton.addEventListener('click', function() {
+                log(`Current screen: ${window.appState.currentScreen}`);
+                log(`Data collection active: ${window.appState.dataCollectionActive}`);
+                log(`Assessment progress: ${window.appState.assessmentProgress}%`);
+                log(`Assessment complete: ${window.appState.assessmentComplete}`);
+            });
+            
+            // Test collect button - force data collection
+            testCollectButton.addEventListener('click', function() {
+                collectBrowserData();
+                log('Forced data collection');
+            });
+            
+            // Function to collect browser data (only when authorized)
+            function collectBrowserData() {
+                if (!window.appState.dataCollectionActive) {
+                    log('⚠️ Data collection attempted but NOT active!');
+                    log('This is correct behavior - collection should only happen after consent.');
+                    return;
+                }
+                
+                log('Collecting browser data with consent...');
+                
+                // Generate a random ID for the session
+                const sessionId = Math.random().toString(36).substring(2, 10).toUpperCase();
+                document.getElementById('session-id-value').textContent = sessionId;
+                
+                // Set the current time
+                const currentTime = new Date().toLocaleTimeString();
+                document.getElementById('local-time-value').textContent = currentTime;
+                
+                // Set username
+                document.getElementById('username-value').textContent = 'Test User';
+                
+                // Get browser information
+                const userAgent = navigator.userAgent;
+                const browserInfo = getBrowserInfo(userAgent);
+                document.getElementById('browser-value').textContent = browserInfo;
+                document.getElementById('user-agent-value').textContent = userAgent;
+                
+                // Generate random risk scores for demonstration
+                const identityScore = (8 + Math.random() * 2).toFixed(1);
+                const trackingScore = (8 + Math.random() * 2).toFixed(1);
+                
+                document.getElementById('summary-identity-exposure').textContent = identityScore;
+                document.getElementById('summary-tracking-potential').textContent = trackingScore;
+                
+                log('Data collection complete');
+            }
+            
+            // Get browser information
+            function getBrowserInfo(userAgent) {
+                if (userAgent.indexOf('Firefox') > -1) {
+                    return 'Firefox';
+                } else if (userAgent.indexOf('Chrome') > -1) {
+                    return 'Chrome';
+                } else if (userAgent.indexOf('Safari') > -1) {
+                    return 'Safari';
+                } else if (userAgent.indexOf('Edge') > -1) {
+                    return 'Edge';
+                } else {
+                    return 'Unknown Browser';
+                }
+            }
+            
+            log('Test environment initialized');
+        });
+    </script>
+</body>
+</html>

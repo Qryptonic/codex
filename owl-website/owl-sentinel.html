@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWL Sentinel - Advanced Digital Exposure Analysis</title>
+    <meta name="description" content="OWL Sentinel provides comprehensive analysis of your digital exposure profile, detecting what websites can legally collect from your browser.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="img/owl-icon-192.png">
+    <!-- Secure by default -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <!-- PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0A0012">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* Screen Transition Styles */
+        .screen {
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screen.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .screen.active {
+            display: block;
+            opacity: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Assessment screen styles */
+        #assessment-screen {
+            text-align: center;
+            background-color: rgba(10, 0, 25, 0.95);
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 40px auto;
+            border-left: 2px solid var(--primary-color);
+            border-right: 2px solid var(--secondary-color);
+            box-shadow: 0 0 30px rgba(157, 0, 255, 0.4);
+            position: relative;
+        }
+
+        .assessment-header {
+            margin-bottom: 30px;
+        }
+
+        .assessment-title {
+            font-size: 24px;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .assessment-subtitle {
+            font-size: 16px;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .progress-container {
+            margin: 30px 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 0 10px var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 10px;
+            font-size: 16px;
+            color: var(--secondary-color);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Scan log styles */
+        .scan-log-container {
+            margin: 30px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            padding: 15px;
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed rgba(5, 217, 232, 0.2);
+        }
+
+        .log-entry.highlight {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .log-entry .timestamp {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+
+        .log-entry .message {
+            color: var(--text-color);
+        }
+
+        /* Cyber Button Styles */
+        .cyber-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.5);
+            clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+            margin: 20px auto;
+        }
+
+        .cyber-button.disabled {
+            background: linear-gradient(135deg, #4a4a4a, #2c2c2c);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .cyber-button.ready-pulse {
+            animation: buttonPulse 1.5s infinite alternate;
+        }
+
+        @keyframes buttonPulse {
+            0% { box-shadow: 0 0 15px rgba(157, 0, 255, 0.5); }
+            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Enterprise Header with Secure Connection Indicator -->
+    <div class="enterprise-header">
+        <div class="header-logo">
+            <img src="img/owl-badge.png" alt="OWL Security" class="header-badge">
+            <h1 class="header-title">OWL Sentinel</h1>
+        </div>
+        <div class="connection-status">
+            <div class="connection-indicator secure"></div>
+            <span>SECURE CONNECTION</span>
+        </div>
+    </div>
+
+    <!-- Protocol Notice for non-HTTPS connections -->
+    <div id="https-warning" class="protocol-notice hidden">
+        ⚠️ Warning: Using insecure HTTP protocol. Some browser features will be unavailable.
+    </div>
+
+    <!-- Landing Screen -->
+    <div id="landing-screen" class="screen active">
+        <div class="auth-container">
+            <!-- OWL Branding -->
+            <div class="auth-branding">
+                <img src="img/owl-badge.png" alt="OWL Security" class="auth-logo">
+                <h2 class="auth-header cyberpunk-header">OWL Sentinel</h2>
+                <p>Advanced Digital Exposure Analysis</p>
+            </div>
+            
+            <!-- Legal Disclaimer in Terminal Style -->
+            <div class="terminal-header">
+                <span class="terminal-title">SECURE DISCLOSURE TERMINAL // OWL ADVISORY GROUP</span>
+                <div class="terminal-controls">
+                    <span class="terminal-circle"></span>
+                    <span class="terminal-circle"></span>
+                    <span class="terminal-circle"></span>
+                </div>
+            </div>
+            
+            <div class="disclaimer-content enterprise-terminal">
+                <p>All data processing occurs locally in your browser. No information is transmitted to external servers unless explicitly requested. This tool demonstrates the standard data collection capabilities available to any website you visit.</p>
+                <p>The OWL Sentinel system serves as an educational demonstration of digital exposure vectors. By proceeding, you authorize the system to collect and analyze data accessible through standard browser APIs.</p>
+                <p>This system will identify and display what websites can legally collect from your browser without notification. No data persists beyond your session.</p>
+            </div>
+            
+            <div class="encryption-indicator">
+                <span class="encryption-dot"></span> LOCAL PROCESSING: NO SERVER TRANSMISSION
+            </div>
+
+            <!-- Authorize Button -->
+            <button id="start-scan-button" class="cyber-button">
+                <span class="button-content">AUTHORIZE SCAN</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Assessment Screen -->
+    <div id="assessment-screen" class="screen hidden">
+        <div class="assessment-header">
+            <h2 class="assessment-title">System Vulnerability Assessment</h2>
+            <p class="assessment-subtitle">Analyzing your digital exposure footprint...</p>
+        </div>
+
+        <div class="progress-container">
+            <div id="assessment-progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="assessment-progress-text" class="progress-text">0%</p>
+
+        <div class="scan-log-container">
+            <div id="scan-log"></div>
+        </div>
+
+        <button id="continue-button" class="cyber-button disabled">
+            <span class="button-content">CONTINUE TO DASHBOARD</span>
+        </button>
+    </div>
+
+    <!-- Dashboard Screen (Data Collection Starts Here) -->
+    <div id="dashboard-screen" class="screen hidden">
+        <div class="dashboard-layout">
+            <div class="dashboard-header-section">
+                <h1>OWL Sentinel Dashboard</h1>
+                <img src="img/owl-badge.png" alt="OWL Security" class="owl-scanner">
+            </div>
+            
+            <div class="local-processing-notice">
+                <span class="secure-badge">ℹ️ Secure Enclave Active:</span> All data processing occurs locally in your browser. No external transmission.
+            </div>
+
+            <h3 class="dashboard-headline">EXPOSED DATA ANALYSIS :: LIVE FEED</h3>
+
+            <!-- Data Grid - Multiple Panels -->
+            <div class="data-grid">
+                <!-- Identity & Location Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">Identity & Location</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">HANDLE:</div>
+                            <div id="username-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">SESSION:</div>
+                            <div id="session-id-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">PUBLIC IP:</div>
+                            <div id="public-ip" class="data-value">FETCHING...</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">LOCAL IP:</div>
+                            <div id="local-ip" class="data-value">DETECTION TIMEOUT</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">LOCATION:</div>
+                            <div id="location-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">GPS</div>
+                            <div id="gps-value" class="data-value">Permission denied</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">LOCAL TIME:</div>
+                            <div id="local-time-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">TIMEZONE:</div>
+                            <div id="timezone-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">LANGUAGE:</div>
+                            <div id="language-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">LANGUAGES:</div>
+                            <div id="languages-value" class="data-value">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network & Connection Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">Network & Connect</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">NET TYPE:</div>
+                            <div id="network-type" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">DOWNLINK:</div>
+                            <div id="downlink-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">LATENCY:</div>
+                            <div id="latency-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">DL SPEED:</div>
+                            <div id="dl-speed" class="data-value">Use API Estimate</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">UL SPEED:</div>
+                            <div id="ul-speed" class="data-value">Use API Estimate</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">CONN MAP:</div>
+                            <div id="conn-map" class="data-value">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System & Hardware Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">System & Hardware</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">DEVICE:</div>
+                            <div id="device-type" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">OS/PLATFORM:</div>
+                            <div id="os-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">CPU CORES:</div>
+                            <div id="cpu-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">MEMORY:</div>
+                            <div id="memory-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">SCREEN:</div>
+                            <div id="screen-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">VIEWPORT:</div>
+                            <div id="viewport-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">SCR CAPS:</div>
+                            <div id="screen-caps" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">BATTERY:</div>
+                            <div id="battery-text" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">MOTION:</div>
+                            <div id="motion-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">BATT RATE:</div>
+                            <div id="battery-rate" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">GPU:</div>
+                            <div id="gpu-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">JS PERF:</div>
+                            <div id="js-performance" class="data-value">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Behavior & Input Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">Behavior & Input</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">CURSOR XY:</div>
+                            <div id="cursor-position" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">MOVEMENT:</div>
+                            <div id="movement-pattern" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">SCROLL %:</div>
+                            <div id="scroll-depth" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">TIME ON PAGE:</div>
+                            <div id="time-on-page" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">WPM (ID):</div>
+                            <div id="typing-speed" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">DYNAMICS:</div>
+                            <div id="typing-dynamics" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">CLIPBOARD:</div>
+                            <div id="clipboard-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">TOUCH:</div>
+                            <div id="touch-patterns" class="data-value">--</div>
+                        </div>
+                        <div class="keystroke-title">Keystroke Log (Page):</div>
+                        <div id="keystrokeAnalysis" class="keystroke-area">(Only logs here)</div>
+                    </div>
+                </div>
+
+                <!-- Browser & Fingerprint Panel -->
+                <div class="panel">
+                    <h2 class="panel-header">Browser & Fingerprint</h2>
+                    <div class="panel-content">
+                        <div class="data-row">
+                            <div class="data-label">BROWSER:</div>
+                            <div id="browser-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">USER AGENT:</div>
+                            <div id="user-agent-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">COOKIES:</div>
+                            <div id="cookies-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">DNT/GPC:</div>
+                            <div id="dnt-status" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">PLUGINS:</div>
+                            <div id="plugins-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">STORAGE:</div>
+                            <div id="storage-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">CODECS:</div>
+                            <div id="codecs-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">FINGERPRINT:</div>
+                            <div id="fingerprint-value" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">CANVAS FP:</div>
+                            <div id="canvas-fp" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">AUDIO FP:</div>
+                            <div id="audio-fp" class="data-value">--</div>
+                        </div>
+                        <div class="data-row">
+                            <div class="data-label">WEBGL FP:</div>
+                            <div id="webgl-fp" class="data-value">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global app state - Tracks where the user is and controls data collection
+        const appState = {
+            currentScreen: 'landing',
+            dataCollectionActive: false, // CRITICAL: This flag prevents data collection until dashboard
+            assessmentProgress: 0,
+            assessmentComplete: false,
+            startTime: new Date()
+        };
+
+        // Wait for DOM to be loaded before initializing
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('OWL Sentinel initialized');
+            
+            // Get screen elements
+            const landingScreen = document.getElementById('landing-screen');
+            const assessmentScreen = document.getElementById('assessment-screen');
+            const dashboardScreen = document.getElementById('dashboard-screen');
+            
+            // Get button elements
+            const startScanButton = document.getElementById('start-scan-button');
+            const continueButton = document.getElementById('continue-button');
+            
+            // Check HTTPS
+            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+                document.getElementById('https-warning').classList.remove('hidden');
+            }
+            
+            // Set up screen transitions
+            if (startScanButton) {
+                startScanButton.addEventListener('click', function() {
+                    console.log('Starting assessment process...');
+                    
+                    // Update state
+                    appState.currentScreen = 'assessment';
+                    
+                    // Hide landing screen
+                    landingScreen.classList.remove('active');
+                    landingScreen.classList.add('hidden');
+                    
+                    // Show assessment screen
+                    assessmentScreen.classList.remove('hidden');
+                    assessmentScreen.classList.add('active');
+                    
+                    // Start assessment progress animation
+                    runAssessment();
+                });
+            }
+            
+            // Transition from assessment to dashboard
+            if (continueButton) {
+                continueButton.addEventListener('click', function() {
+                    // Only proceed if assessment is complete
+                    if (!appState.assessmentComplete) {
+                        return;
+                    }
+                    
+                    console.log('Proceeding to dashboard...');
+                    
+                    // Update state
+                    appState.currentScreen = 'dashboard';
+                    
+                    // Hide assessment screen
+                    assessmentScreen.classList.remove('active');
+                    assessmentScreen.classList.add('hidden');
+                    
+                    // Show dashboard screen
+                    dashboardScreen.classList.remove('hidden');
+                    dashboardScreen.classList.add('active');
+                    
+                    // CRITICAL: Only activate data collection after reaching dashboard
+                    appState.dataCollectionActive = true;
+                    console.log('Data collection activated');
+                    
+                    // Now that we're authorized, start collecting data
+                    startDataCollection();
+                });
+            }
+            
+            // Try initial data collection - should fail because we're not on dashboard yet
+            attemptDataCollection();
+        });
+        
+        // Run the assessment process animation
+        function runAssessment() {
+            console.log('Running security assessment...');
+            
+            // Get progress elements
+            const progressBar = document.getElementById('assessment-progress-bar');
+            const progressText = document.getElementById('assessment-progress-text');
+            const scanLog = document.getElementById('scan-log');
+            const continueButton = document.getElementById('continue-button');
+            
+            // Reset progress
+            appState.assessmentProgress = 0;
+            appState.assessmentComplete = false;
+            
+            // Assessment messages to display during progress
+            const progressMessages = [
+                "Initializing scan environment...",
+                "Scanning network interfaces...",
+                "Analyzing browser configuration...",
+                "Checking hardware specifications...",
+                "Detecting installed plugins...",
+                "Analyzing system fingerprint...",
+                "Mapping potential vulnerabilities...",
+                "Generating risk assessment model...",
+                "Preparing dashboard visualization...",
+                "Scan complete. Results ready for review."
+            ];
+            
+            // Add initial log entry
+            if (scanLog) {
+                scanLog.innerHTML = `<div class="log-entry">
+                    <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                    <span class="message">SCAN INITIALIZED. PROCESSING...</span>
+                </div>`;
+            }
+            
+            // Run progress animation
+            const interval = setInterval(function() {
+                // Increment progress
+                appState.assessmentProgress += 1;
+                
+                // Update progress bar
+                if (progressBar) {
+                    progressBar.style.width = `${appState.assessmentProgress}%`;
+                }
+                
+                // Update progress text
+                if (progressText) {
+                    progressText.textContent = `${appState.assessmentProgress}%`;
+                }
+                
+                // Add log entries at specific progress points
+                if (appState.assessmentProgress % 10 === 0 && scanLog) {
+                    const messageIndex = Math.floor(appState.assessmentProgress / 10) - 1;
+                    if (messageIndex >= 0 && messageIndex < progressMessages.length) {
+                        scanLog.innerHTML += `<div class="log-entry">
+                            <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                            <span class="message">${progressMessages[messageIndex]}</span>
+                        </div>`;
+                        
+                        // Scroll to bottom of log
+                        scanLog.scrollTop = scanLog.scrollHeight;
+                    }
+                }
+                
+                // Complete assessment at 100%
+                if (appState.assessmentProgress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Mark assessment as complete
+                    appState.assessmentComplete = true;
+                    
+                    // Enable continue button
+                    if (continueButton) {
+                        continueButton.classList.remove('disabled');
+                        continueButton.classList.add('ready-pulse');
+                    }
+                    
+                    // Final log entry
+                    if (scanLog) {
+                        scanLog.innerHTML += `<div class="log-entry highlight">
+                            <span class="timestamp">[${new Date().toLocaleTimeString()}]</span>
+                            <span class="message">ASSESSMENT COMPLETE. DASHBOARD READY.</span>
+                        </div>`;
+                        
+                        // Scroll to bottom of log
+                        scanLog.scrollTop = scanLog.scrollHeight;
+                    }
+                    
+                    console.log('Assessment complete');
+                }
+            }, 50); // Update every 50ms for faster demo
+        }
+        
+        // Try to collect data - will only succeed if dataCollectionActive is true
+        function attemptDataCollection() {
+            // Check if we're authorized to collect data
+            if (!appState.dataCollectionActive) {
+                console.log('Data collection not active yet - waiting for user to reach dashboard');
+                return false;
+            }
+            
+            // If we get here, we're authorized to collect data
+            console.log('Data collection is active, proceeding with collection');
+            return true;
+        }
+        
+        // Start data collection after reaching dashboard
+        function startDataCollection() {
+            // This is only called after reaching the dashboard
+            // Double-check we're authorized
+            if (!attemptDataCollection()) {
+                return;
+            }
+            
+            console.log('Starting comprehensive data collection...');
+            
+            // Generate session ID - use a hash of user agent plus time for uniqueness
+            const sessionId = hashString(navigator.userAgent + new Date().getTime());
+            
+            // Set basic browser information
+            updateElement('session-id-value', sessionId);
+            updateElement('username-value', 'Sentinel User');
+            updateElement('local-time-value', new Date().toLocaleTimeString());
+            updateElement('timezone-value', Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown');
+            updateElement('language-value', navigator.language || 'Unknown');
+            updateElement('languages-value', navigator.languages ? navigator.languages.join(', ') : 'N/A');
+            
+            // Device and system information
+            updateElement('device-type', getDeviceType());
+            updateElement('os-value', getOSInfo());
+            updateElement('cpu-value', navigator.hardwareConcurrency || 'Unknown');
+            updateElement('memory-value', '8 GB (API)'); // Would need a more advanced API for real value
+            
+            // Screen and viewport
+            updateElement('screen-value', `${window.screen.width}x${window.screen.height}@${window.devicePixelRatio}x`);
+            updateElement('viewport-value', `${window.innerWidth}x${window.innerHeight}`);
+            updateElement('screen-caps', `ColorDepth: ${window.screen.colorDepth}, PixelDepth: ${window.screen.pixelDepth}`);
+            
+            // Browser information
+            updateElement('browser-value', getBrowserInfo());
+            updateElement('user-agent-value', navigator.userAgent);
+            updateElement('cookies-value', navigator.cookieEnabled ? 'ENABLED' : 'DISABLED');
+            updateElement('dnt-status', navigator.doNotTrack ? 'ENABLED (DNT)' : 'DISABLED');
+            
+            // Storage
+            const storageTypes = [];
+            if (typeof localStorage !== 'undefined') storageTypes.push('LocalStorage');
+            if (typeof sessionStorage !== 'undefined') storageTypes.push('SessionStorage');
+            if (typeof indexedDB !== 'undefined') storageTypes.push('IndexedDB');
+            updateElement('storage-value', `Avail (${storageTypes.join(', ')})`);
+            
+            // Network
+            updateElement('network-type', '4G'); // Would need the Network Information API for real value
+            updateElement('downlink-value', '10 Mbps (Est.)');
+            updateElement('latency-value', '50 ms (Est.)');
+            updateElement('conn-map', '8 NODES (Sim.)');
+            
+            // Plugins
+            const plugins = Array.from(navigator.plugins || []).map(p => p.name).slice(0, 3);
+            updateElement('plugins-value', plugins.length > 0 ? 
+                `${plugins.join(', ')}... (${navigator.plugins.length})` : 'None detected');
+            
+            // Generate fingerprints
+            updateElement('fingerprint-value', sessionId.substring(0, 8));
+            updateElement('canvas-fp', hashString(navigator.userAgent + screen.width).substring(0, 8));
+            updateElement('audio-fp', hashString(navigator.userAgent + navigator.language).substring(0, 8));
+            updateElement('webgl-fp', hashString(navigator.userAgent + screen.colorDepth).substring(0, 8));
+            
+            // Start periodic updates
+            startPeriodicUpdates();
+            
+            // Add event listeners for tracking behavior
+            setupBehaviorTracking();
+            
+            console.log('Initial data collection complete');
+        }
+        
+        // Start periodic updates for time-sensitive information
+        function startPeriodicUpdates() {
+            setInterval(function() {
+                // Only update if data collection is active
+                if (!appState.dataCollectionActive) return;
+                
+                // Update time on page
+                const timeInSeconds = Math.round((new Date() - appState.startTime) / 1000);
+                updateElement('time-on-page', `${timeInSeconds}s`);
+                
+                // Update local time
+                updateElement('local-time-value', new Date().toLocaleTimeString());
+                
+                // Get battery info (if available)
+                if (navigator.getBattery) {
+                    navigator.getBattery().then(function(battery) {
+                        const level = Math.round(battery.level * 100);
+                        const charging = battery.charging ? 'Charging' : 'Discharging';
+                        updateElement('battery-text', `${level}% (${charging})`);
+                    });
+                }
+            }, 1000);
+        }
+        
+        // Set up tracking for user behavior
+        function setupBehaviorTracking() {
+            // Only setup if data collection is active
+            if (!appState.dataCollectionActive) return;
+            
+            // Track mouse movement
+            let clickCount = 0;
+            document.addEventListener('mousemove', function(e) {
+                if (!appState.dataCollectionActive) return;
+                updateElement('cursor-position', `${e.clientX}, ${e.clientY}`);
+                
+                // Simple movement pattern detection
+                const speed = Math.sqrt(Math.pow(e.movementX, 2) + Math.pow(e.movementY, 2));
+                updateElement('movement-pattern', speed > 10 ? 'FAST' : (speed > 2 ? 'NORMAL' : 'SLOW'));
+            });
+            
+            // Track scrolling
+            document.addEventListener('scroll', function() {
+                if (!appState.dataCollectionActive) return;
+                const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+                const scrolled = window.scrollY;
+                const percentage = Math.round((scrolled / scrollable) * 100);
+                updateElement('scroll-depth', `${percentage}%`);
+            });
+            
+            // Track clicks
+            document.addEventListener('click', function() {
+                if (!appState.dataCollectionActive) return;
+                clickCount++;
+                updateElement('click-patterns', `${clickCount} CLICKS`);
+            });
+        }
+        
+        // Helper function to update an element's text content
+        function updateElement(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+        
+        // Helper function to hash a string
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            // Convert to 8-character hex string
+            return (hash >>> 0).toString(16).padStart(8, '0').toUpperCase();
+        }
+        
+        // Helper function to detect device type
+        function getDeviceType() {
+            const ua = navigator.userAgent;
+            if (/Mobile|Android|iPhone|iPad|iPod/.test(ua)) {
+                return 'Mobile';
+            }
+            return 'Desktop';
+        }
+        
+        // Helper function to detect OS
+        function getOSInfo() {
+            const ua = navigator.userAgent;
+            if (/Windows/.test(ua)) return 'Windows';
+            if (/Macintosh|Mac OS X/.test(ua)) return 'MacOS';
+            if (/Linux/.test(ua)) return 'Linux';
+            if (/Android/.test(ua)) return 'Android';
+            if (/iPhone|iPad|iPod/.test(ua)) return 'iOS';
+            return 'Unknown OS';
+        }
+        
+        // Helper function to get browser info
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            if (/Firefox\/([0-9]+)/.test(ua)) {
+                return `Firefox ${RegExp.$1}`;
+            } else if (/Edge\/([0-9]+)/.test(ua) || /Edg\/([0-9]+)/.test(ua)) {
+                return `Edge ${RegExp.$1}`;
+            } else if (/Chrome\/([0-9]+)/.test(ua)) {
+                return `Chrome ${RegExp.$1}`;
+            } else if (/Safari\/([0-9]+)/.test(ua)) {
+                return `Safari ${RegExp.$1}`;
+            }
+            return 'Unknown Browser';
+        }
+        
+        // Register service worker if supported
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/js/sw.js').then(registration => {
+                    console.log('ServiceWorker registered');
+                }).catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

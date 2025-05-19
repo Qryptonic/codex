@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error Test</title>
+</head>
+<body>
+    <h1>Error Test Page</h1>
+    <div id="error-log"></div>
+
+    <script>
+        // Function to log errors
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorLog = document.getElementById('error-log');
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = 'red';
+            errorDiv.textContent = `ERROR: ${message} at ${source}:${lineno}:${colno}`;
+            errorLog.appendChild(errorDiv);
+            console.error(message, source, lineno, colno, error);
+            return true;
+        };
+
+        // Log any module loading errors
+        window.addEventListener('error', function(e) {
+            if (e.target.tagName === 'SCRIPT') {
+                const errorLog = document.getElementById('error-log');
+                const errorDiv = document.createElement('div');
+                errorDiv.style.color = 'orange';
+                errorDiv.textContent = `Script Error: Failed to load ${e.target.src}`;
+                errorLog.appendChild(errorDiv);
+            }
+        }, true);
+
+        // Function to add a script
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.src = src;
+                script.onload = () => {
+                    const statusDiv = document.createElement('div');
+                    statusDiv.style.color = 'green';
+                    statusDiv.textContent = `Loaded: ${src}`;
+                    document.getElementById('error-log').appendChild(statusDiv);
+                    resolve();
+                };
+                script.onerror = (err) => {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.color = 'red';
+                    errorDiv.textContent = `Failed to load: ${src}`;
+                    document.getElementById('error-log').appendChild(errorDiv);
+                    reject(err);
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        // Load scripts in sequence
+        async function loadScripts() {
+            try {
+                await loadScript('./js/config.js');
+                await loadScript('./js/modules/core.js');
+                await loadScript('./js/modules/data-collection-api.js');
+                await loadScript('./js/data-collection.js');
+                await loadScript('./js/main.js');
+                
+                // Check if any modules were successfully loaded
+                setTimeout(() => {
+                    const statusDiv = document.createElement('div');
+                    statusDiv.style.color = 'blue';
+                    statusDiv.textContent = `Final status: Window.modules: ${JSON.stringify(Object.keys(window.modules || {}))}`;
+                    document.getElementById('error-log').appendChild(statusDiv);
+                }, 1000);
+            } catch (err) {
+                console.error('Script loading failed:', err);
+            }
+        }
+
+        // Start loading scripts
+        loadScripts();
+    </script>
+</body>
+</html>

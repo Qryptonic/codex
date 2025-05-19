@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular Structure Test</title>
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #A855F7;
+            border-bottom: 1px solid #A855F7;
+            padding-bottom: 10px;
+        }
+        .module {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(10, 0, 20, 0.92);
+            border: 1px solid #A855F7;
+        }
+        .module h2 {
+            margin-top: 0;
+            color: #00FFFF;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(0, 255, 255, 0.1);
+            border-left: 3px solid #00FFFF;
+            word-break: break-all;
+        }
+        button {
+            background-color: #A855F7;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #8A2BE2;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            height: 200px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .success { color: #00E676; }
+        .error { color: #FF1744; }
+        .info { color: #00FFFF; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Modular Structure Test</h1>
+        <p>This page tests the modular structure of the refactored data collection system.</p>
+        
+        <div class="module">
+            <h2>Core Module</h2>
+            <button id="test-core">Test Hash Function</button>
+            <div class="result" id="core-result">Test results will appear here</div>
+        </div>
+        
+        <div class="module">
+            <h2>Fingerprinting Module</h2>
+            <button id="test-canvas">Generate Canvas Fingerprint</button>
+            <button id="test-webgl">Generate WebGL Fingerprint</button>
+            <button id="test-audio">Generate Audio Fingerprint</button>
+            <div class="result" id="fingerprint-result">Test results will appear here</div>
+        </div>
+        
+        <div class="module">
+            <h2>Network Module</h2>
+            <button id="test-webrtc">Test WebRTC IP Detection</button>
+            <button id="test-public-ip">Test Public IP Detection</button>
+            <div class="result" id="network-result">Test results will appear here</div>
+        </div>
+        
+        <div class="module">
+            <h2>API Module</h2>
+            <button id="test-api">Run Basic Profile Collection</button>
+            <div class="result" id="api-result">Test results will appear here</div>
+        </div>
+        
+        <div id="log">
+            <div class="log-entry info">Console log will appear here</div>
+        </div>
+    </div>
+    
+    <script type="module">
+        // Define global objects needed by modules
+        window.DOMElements = {};
+        window.CONFIG = {
+            CURSOR_DATA_LIMIT: 40,
+            SCROLL_DATA_LIMIT: 30,
+            MOUSE_THROTTLE_MS: 120,
+            SCROLL_THROTTLE_MS: 180,
+            FONT_TEST_LIMIT: 50,
+            LOG_LEVEL: 'debug'
+        };
+        
+        // Simple logger implementation
+        window.logger = {
+            debug: (...args) => console.debug('[DBG]', ...args),
+            info: (...args) => console.info('[INF]', ...args),
+            warn: (...args) => console.warn('[WRN]', ...args),
+            error: (...args) => console.error('[ERR]', ...args)
+        };
+        
+        // Import modules
+        import { 
+            dataCollectionHash,
+            getDeviceType,
+            getOSInfo
+        } from './js/modules/core.js';
+        
+        import {
+            generateCanvasFingerprint,
+            generateWebGLFingerprint,
+            generateAudioFingerprint
+        } from './js/modules/fingerprinting.js';
+        
+        import {
+            getWebRTCIP,
+            fetchPublicIP
+        } from './js/modules/network.js';
+        
+        import {
+            runEnhancedDataCollection
+        } from './js/modules/data-collection-api.js';
+        
+        // Override console.log to display in our UI
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+        
+        const logElement = document.getElementById('log');
+        
+        function appendToLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = message;
+            logElement.appendChild(entry);
+            logElement.scrollTop = logElement.scrollHeight;
+            
+            // Also log to the original console
+            originalConsole[type](message);
+        }
+        
+        console.log = (message) => appendToLog(message, 'info');
+        console.error = (message) => appendToLog(message, 'error');
+        console.warn = (message) => appendToLog(message, 'warn');
+        console.info = (message) => appendToLog(message, 'info');
+        
+        // Set up event listeners
+        document.getElementById('test-core').addEventListener('click', () => {
+            const result = document.getElementById('core-result');
+            
+            try {
+                const testStr = 'Hello, World! ' + new Date().toISOString();
+                const hash = dataCollectionHash(testStr);
+                result.textContent = `Hash of "${testStr}": ${hash}`;
+                result.textContent += `\n\nDevice Type: ${getDeviceType()}`;
+                result.textContent += `\nOS Info: ${getOSInfo()}`;
+                console.log('Core module test successful');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('Core module test failed:', error);
+            }
+        });
+        
+        document.getElementById('test-canvas').addEventListener('click', async () => {
+            const result = document.getElementById('fingerprint-result');
+            
+            try {
+                const fingerprint = generateCanvasFingerprint();
+                result.textContent = `Canvas Fingerprint: ${fingerprint}`;
+                console.log('Canvas fingerprint test successful');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('Canvas fingerprint test failed:', error);
+            }
+        });
+        
+        document.getElementById('test-webgl').addEventListener('click', async () => {
+            const result = document.getElementById('fingerprint-result');
+            
+            try {
+                result.textContent = 'Generating WebGL fingerprint...';
+                const fingerprint = await generateWebGLFingerprint();
+                result.textContent = `WebGL Fingerprint: ${fingerprint}`;
+                console.log('WebGL fingerprint test successful');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('WebGL fingerprint test failed:', error);
+            }
+        });
+        
+        document.getElementById('test-audio').addEventListener('click', async () => {
+            const result = document.getElementById('fingerprint-result');
+            
+            try {
+                result.textContent = 'Generating Audio fingerprint...';
+                const fingerprint = await generateAudioFingerprint();
+                result.textContent = `Audio Fingerprint: ${fingerprint}`;
+                console.log('Audio fingerprint test successful');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('Audio fingerprint test failed:', error);
+            }
+        });
+        
+        document.getElementById('test-webrtc').addEventListener('click', async () => {
+            const result = document.getElementById('network-result');
+            
+            try {
+                result.textContent = 'Detecting local IP via WebRTC...';
+                const ip = await getWebRTCIP();
+                result.textContent = ip ? `Local IP: ${ip}` : 'Local IP detection failed or blocked';
+                console.log('WebRTC IP test completed');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('WebRTC IP test failed:', error);
+            }
+        });
+        
+        document.getElementById('test-public-ip').addEventListener('click', async () => {
+            const result = document.getElementById('network-result');
+            
+            try {
+                result.textContent = 'Fetching public IP...';
+                const ip = await fetchPublicIP();
+                result.textContent = ip ? `Public IP: ${ip}` : 'Public IP detection failed or blocked';
+                console.log('Public IP test completed');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('Public IP test failed:', error);
+            }
+        });
+        
+        document.getElementById('test-api').addEventListener('click', () => {
+            const result = document.getElementById('api-result');
+            
+            try {
+                result.textContent = 'Running basic profile collection...';
+                
+                // Create a basic user profile container
+                window.userProfile = {
+                    timestamp: new Date().toISOString(),
+                    fingerprintData: {},
+                    hardwareProfile: {},
+                    geoContext: {},
+                    privacyMetrics: {}
+                };
+                
+                // Call the main API function
+                runEnhancedDataCollection('Test User');
+                
+                // Check the result after a delay
+                setTimeout(() => {
+                    if (window.userProfile) {
+                        result.textContent = 'Profile data collected:\n';
+                        result.textContent += JSON.stringify(window.userProfile, null, 2).substring(0, 500) + '...';
+                    } else {
+                        result.textContent = 'Profile data not available';
+                    }
+                }, 2000);
+                
+                console.log('API test initiated');
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+                console.error('API test failed:', error);
+            }
+        });
+        
+        console.log('Modular test page loaded successfully');
+    </script>
+</body>
+</html>

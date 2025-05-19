@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OWL ADVISORY GROUP</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: url('img/grid-background.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .auth-container {
+            width: 400px;
+            background-color: rgba(25, 5, 35, 0.95);
+            border: 1px solid #9D00FF;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 70px rgba(157, 0, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .smiley-icon {
+            font-size: 48px;
+            color: #9D00FF;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #9D00FF;
+        }
+        
+        .auth-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: #9D00FF;
+            text-transform: uppercase;
+        }
+        
+        .critical-notice {
+            font-size: 7px;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+        }
+        
+        .critical-notice p {
+            margin-bottom: 8px;
+        }
+        
+        .assessment-points {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .assessment-points li {
+            margin-bottom: 6px;
+            font-size: 6px;
+            line-height: 1.4;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        
+        label {
+            font-size: 9px;
+            color: #9D00FF;
+            text-transform: uppercase;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            background-color: rgba(26, 0, 48, 0.8);
+            border: 1px solid #9D00FF;
+            color: #fff;
+            padding: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+        
+        .input-caption {
+            font-size: 6px;
+            text-align: left;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .consent-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            text-align: left;
+        }
+        
+        input[type="checkbox"] {
+            margin-top: 2px;
+        }
+        
+        .checkbox-label {
+            font-size: 9px;
+        }
+        
+        .consent-text {
+            font-size: 5px;
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.3;
+        }
+        
+        .auth-button {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #9D00FF;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .auth-button:hover:not([disabled]) {
+            background-color: rgba(157, 0, 255, 0.2);
+        }
+        
+        .auth-button[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .footer-text {
+            font-size: 7px;
+            color: #9D00FF;
+            letter-spacing: 2px;
+            margin-top: 15px;
+        }
+        
+        /* Handle screen transitions */
+        .screen {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .screen.hidden {
+            display: none;
+            opacity: 0;
+        }
+        
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Assessment Screen Styles */
+        .assessment-container {
+            width: 500px;
+            background-color: rgba(25, 5, 35, 0.95);
+            border: 1px solid #9D00FF;
+            padding: 30px;
+            box-shadow: 0 0 70px rgba(157, 0, 255, 0.4);
+        }
+        
+        .assessment-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: #9D00FF;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(157, 0, 255, 0.2);
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: #9D00FF;
+            box-shadow: 0 0 10px #9D00FF;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .assessment-logs {
+            height: 150px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(157, 0, 255, 0.3);
+            padding: 10px;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        
+        .log-entry {
+            margin-bottom: 3px;
+            padding-left: 10px;
+            position: relative;
+        }
+        
+        .log-entry::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: #9D00FF;
+        }
+        
+        .status-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 8px;
+        }
+        
+        .status-label {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-weight: bold;
+            color: #9D00FF;
+        }
+        
+        .status-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid #9D00FF;
+            margin-bottom: 5px;
+        }
+        
+        .status-circle.active {
+            background-color: #9D00FF;
+            box-shadow: 0 0 8px #9D00FF;
+        }
+        
+        /* Additional cyberpunk styling */
+        .corner-accent {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 1px solid #9D00FF;
+            opacity: 0.7;
+        }
+        
+        .corner-tl {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .corner-tr {
+            top: -2px;
+            right: -2px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .corner-bl {
+            bottom: -2px;
+            left: -2px;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .corner-br {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        /* Dashboard Specific Styles */
+        #dashboardScreen {
+            padding: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: black;
+            background-image: url('img/grid-background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: block;
+        }
+        
+        .secure-enclave {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #00FFFF;
+            font-size: 12px;
+            padding: 5px 20px;
+            text-align: center;
+            border-bottom: 1px solid #9D00FF;
+            z-index: 100;
+        }
+        
+        .dashboard-title {
+            color: #9D00FF;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 24px;
+            text-align: center;
+            margin: 70px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px #9D00FF;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto 50px;
+        }
+        
+        .dashboard-panel {
+            background-color: rgba(25, 5, 35, 0.9);
+            border: 1px solid #9D00FF;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            color: #00FFFF;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #9D00FF;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        .data-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .data-value {
+            color: #FFF;
+            font-weight: bold;
+        }
+        
+        .data-value.high {
+            color: #FF005C;
+        }
+        
+        .data-value.medium {
+            color: #FFB800;
+        }
+        
+        .data-value.low {
+            color: #00FF8B;
+        }
+        
+        .network-map {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid #9D00FF;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #00FFFF;
+            border-radius: 50%;
+        }
+        
+        .connection {
+            position: absolute;
+            height: 1px;
+            background-color: rgba(157, 0, 255, 0.5);
+            transform-origin: 0 0;
+        }
+        
+        .keystroke-analysis {
+            height: 100px;
+            overflow-y: auto;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid #9D00FF;
+            padding: 5px;
+            font-family: monospace;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        
+        .risk-assessment {
+            margin-top: 15px;
+        }
+        
+        .risk-bar {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .risk-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #FF005C;
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+        
+        .summary-section {
+            background-color: rgba(25, 5, 35, 0.9);
+            border: 1px solid #9D00FF;
+            padding: 15px;
+            margin: 20px auto 50px;
+            max-width: 1000px;
+            text-align: center;
+        }
+        
+        .summary-title {
+            color: #FF005C;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .summary-message {
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .summary-items {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .summary-item {
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-left: 2px solid #00FFFF;
+        }
+        
+        .summary-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            color: #FF005C;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Screen -->
+    <div id="landingScreen" class="screen active">
+        <div class="auth-container">
+            <div class="corner-accent corner-tl"></div>
+            <div class="corner-accent corner-tr"></div>
+            <div class="corner-accent corner-bl"></div>
+            <div class="corner-accent corner-br"></div>
+            
+            <div class="logo-container">
+                <div class="smiley-icon">☺</div>
+                <h1 class="auth-title">OWL ADVISORY GROUP</h1>
+            </div>
+
+            <div class="critical-notice">
+                <p><strong>CRITICAL NOTICE:</strong> Proceeding initiates an advanced reconnaissance demonstration simulating potential browser exploitation vectors. FOR THIS LIVE SESSION ONLY, the interface will aggressively attempt to:</p>
+                
+                <ul class="assessment-points">
+                    <li><strong>System & Browser Scan:</strong> Collect detailed browser, OS, hardware specs (CPU, RAM est.), screen/viewport dimensions, language preferences, and installed plugins.</li>
+                    <li><strong>Behavioral Biometrics:</strong> Monitor keystroke dynamics (timing, dwell/flight), cursor movement patterns, scroll depth, and attempt to read clipboard content (requires explicit permission prompt).</li>
+                    <li><strong>Hardware/Sensor Access:</strong> Request Camera/Microphone feeds (requires explicit permission), query Battery status, and access Motion/Orientation Sensor data (mobile, may require permission).</li>
+                    <li><strong>Network Analysis:</strong> Attempt Local IP detection via WebRTC and simulate network reconnaissance.</li>
+                </ul>
+            </div>
+
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="userIdentity">OPERATIVE IDENTIFIER:</label>
+                    <input type="text" id="userIdentity" placeholder="Enter Codename / Handle">
+                    <p class="input-caption">Unique identifier for this reconnaissance session.</p>
+                </div>
+                
+                <label class="consent-checkbox" for="termsCheckbox">
+                    <input type="checkbox" id="termsCheckbox">
+                    <span class="checkbox-label">I acknowledge and consent to this comprehensive security assessment</span>
+                    <p class="consent-text">By checking this box, you consent to comprehensive data collection to provide a full security assessment, including: device fingerprinting; browser and system identification; IP address processing; access to camera, microphone, location, clipboard, and sensors; collection of hardware specifications; network information; behavioral monitoring; storage analysis; and all available browser data. All data is processed securely in accordance with applicable laws.</p>
+                </label>
+                
+                <button class="auth-button" id="termsButton" disabled>
+                    AUTHORIZE SCAN
+                </button>
+            </div>
+            
+            <p class="footer-text">OWL :: ADVISORY GROUP :: THREAT NEUTRALIZATION</p>
+        </div>
+    </div>
+    
+    <!-- Assessment Screen -->
+    <div id="assessmentScreen" class="screen hidden">
+        <div class="assessment-container">
+            <div class="corner-accent corner-tl"></div>
+            <div class="corner-accent corner-tr"></div>
+            <div class="corner-accent corner-bl"></div>
+            <div class="corner-accent corner-br"></div>
+            
+            <h2 class="assessment-title">SYSTEM ASSESSMENT</h2>
+            
+            <p style="text-align: center; font-size: 10px; margin-bottom: 20px;">
+                Preparing assessment for operative: <span id="username-display" style="color: #9D00FF;">Unknown</span>
+            </p>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text">
+                    <span>ASSESSMENT PROGRESS</span>
+                    <span id="progressValue">0%</span>
+                </div>
+            </div>
+            
+            <div class="assessment-logs" id="assessmentLogs">
+                <!-- Log entries will be added dynamically -->
+            </div>
+            
+            <div class="status-indicator">
+                <div class="status-item">
+                    <div class="status-circle"></div>
+                    <div class="status-label">INIT</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-circle"></div>
+                    <div class="status-label">CONFIG</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-circle"></div>
+                    <div class="status-label">SECURE</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-circle"></div>
+                    <div class="status-label">READY</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="auth-button" id="continueButton" disabled>
+                    CONTINUE TO DASHBOARD
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard Screen (Full Cyberpunk Dashboard) -->
+    <div id="dashboardScreen" class="screen hidden">
+        <div class="secure-enclave">
+            <span>🔒 Secure Enclave Active: All data processing occurs locally in your browser. No external transmission.</span>
+        </div>
+        
+        <h1 class="dashboard-title">EXPOSED DATA ANALYSIS :: LIVE FEED</h1>
+        
+        <div class="dashboard-grid">
+            <!-- Identity & Location Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">IDENTITY & LOCATION</h2>
+                <div class="data-row">
+                    <div class="data-label">HANDLE:</div>
+                    <div id="username-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">SESSION:</div>
+                    <div id="session-id-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">PUBLIC IP:</div>
+                    <div id="public-ip" class="data-value">FETCHING...</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LOCAL IP:</div>
+                    <div id="local-ip" class="data-value">DETECTION TIMEOUT</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LOCATION:</div>
+                    <div id="location-value" class="data-value">PERMISSION DENIED</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LOCAL TIME:</div>
+                    <div id="local-time-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">TIMEZONE:</div>
+                    <div id="timezone-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LANGUAGE:</div>
+                    <div id="language-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LANGUAGES:</div>
+                    <div id="languages-value" class="data-value">--</div>
+                </div>
+            </div>
+            
+            <!-- Network & Connection Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">NETWORK & CONNECT</h2>
+                <div class="data-row">
+                    <div class="data-label">NET TYPE:</div>
+                    <div id="network-type" class="data-value">4G</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">DOWNLINK:</div>
+                    <div id="downlink-value" class="data-value">10 Mbps (Est.)</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LATENCY:</div>
+                    <div id="latency-value" class="data-value">50 ms (Est.)</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">DL SPEED:</div>
+                    <div id="dl-speed" class="data-value">Use API Estimate</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">UL SPEED:</div>
+                    <div id="ul-speed" class="data-value">Use API Estimate</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">CONN MAP:</div>
+                    <div id="conn-map" class="data-value">8 NODES (LIVE)</div>
+                </div>
+                <div class="network-map" id="network-map-visual">
+                    <!-- Network nodes will be generated dynamically -->
+                </div>
+            </div>
+            
+            <!-- System & Hardware Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">SYSTEM & HARDWARE</h2>
+                <div class="data-row">
+                    <div class="data-label">DEVICE:</div>
+                    <div id="device-type" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">OS/PLATFORM:</div>
+                    <div id="os-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">CPU CORES:</div>
+                    <div id="cpu-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">MEMORY:</div>
+                    <div id="memory-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">SCREEN:</div>
+                    <div id="screen-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">VIEWPORT:</div>
+                    <div id="viewport-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">SCR CAPS:</div>
+                    <div id="screen-caps" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">BATTERY:</div>
+                    <div id="battery-text" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">MOTION:</div>
+                    <div id="motion-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">GPU:</div>
+                    <div id="gpu-value" class="data-value">--</div>
+                </div>
+            </div>
+            
+            <!-- Behavior & Input Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">BEHAVIOR & INPUT</h2>
+                <div class="data-row">
+                    <div class="data-label">CURSOR XY:</div>
+                    <div id="cursor-position" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">MOVEMENT:</div>
+                    <div id="movement-pattern" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">SCROLL %:</div>
+                    <div id="scroll-depth" class="data-value">0%</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">TIME ON PAGE:</div>
+                    <div id="time-on-page" class="data-value">0s</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">DYNAMICS:</div>
+                    <div id="typing-dynamics" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">CLIPBOARD:</div>
+                    <div id="clipboard-value" class="data-value">PERMISSION DENIED</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">CLICKS:</div>
+                    <div id="click-patterns" class="data-value">0 CLICKS</div>
+                </div>
+                <div style="font-size: 10px; margin-top: 10px; color: #00FFFF;">KEYSTROKE CAPTURE:</div>
+                <div id="keystrokeAnalysis" class="keystroke-analysis">
+                    <!-- Keystroke data will be added here -->
+                </div>
+            </div>
+            
+            <!-- Browser & Fingerprint Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">BROWSER & FINGERPRINT</h2>
+                <div class="data-row">
+                    <div class="data-label">BROWSER:</div>
+                    <div id="browser-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">USER AGENT:</div>
+                    <div id="user-agent-value" class="data-value" style="font-size: 9px; overflow: hidden; text-overflow: ellipsis;">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">COOKIES:</div>
+                    <div id="cookies-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">DNT/GPC:</div>
+                    <div id="dnt-status" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">PLUGINS:</div>
+                    <div id="plugins-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">STORAGE:</div>
+                    <div id="storage-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">FINGERPRINT:</div>
+                    <div id="fingerprint-value" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">CANVAS FP:</div>
+                    <div id="canvas-fp" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">AUDIO FP:</div>
+                    <div id="audio-fp" class="data-value">--</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">WEBGL FP:</div>
+                    <div id="webgl-fp" class="data-value">--</div>
+                </div>
+            </div>
+            
+            <!-- Permissions Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">PERMISSIONS</h2>
+                <div class="data-row">
+                    <div class="data-label">CAMERA:</div>
+                    <div id="camera-value" class="data-value high">PERMISSION DENIED</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">MIC:</div>
+                    <div id="mic-value" class="data-value high">PERMISSION DENIED</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">GEO:</div>
+                    <div id="geo-value" class="data-value high">PERMISSION DENIED</div>
+                </div>
+                <div style="margin: 15px 0 5px; text-align: center;">
+                    <button id="cameraBtn" class="auth-button" style="margin: 5px; padding: 5px 10px; font-size: 10px;">REQUEST CAMERA</button>
+                    <button id="micBtn" class="auth-button" style="margin: 5px; padding: 5px 10px; font-size: 10px;">REQUEST MIC</button>
+                    <button id="geoBtn" class="auth-button" style="margin: 5px; padding: 5px 10px; font-size: 10px;">REQUEST LOCATION</button>
+                </div>
+                <div style="font-size: 10px; color: #00FFFF; margin-top: 10px;">PERMISSION STATUS:</div>
+                <div id="permission-status" class="keystroke-analysis" style="height: 60px;">
+                    <!-- Permission request logs will appear here -->
+                </div>
+            </div>
+            
+            <!-- Risk Assessment Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">RISK ASSESSMENT</h2>
+                <div class="data-row">
+                    <div class="data-label">PRIVACY:</div>
+                    <div id="privacy-score" class="data-value high">9.4/10.0</div>
+                </div>
+                <div class="risk-bar">
+                    <div id="privacy-bar" class="risk-fill" style="width: 94%;"></div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">TRACKING:</div>
+                    <div id="tracking-score" class="data-value high">8.7/10.0</div>
+                </div>
+                <div class="risk-bar">
+                    <div id="tracking-bar" class="risk-fill" style="width: 87%;"></div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">IDENTITY:</div>
+                    <div id="identity-score" class="data-value high">9.2/10.0</div>
+                </div>
+                <div class="risk-bar">
+                    <div id="identity-bar" class="risk-fill" style="width: 92%;"></div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">LEAKAGE:</div>
+                    <div id="leakage-score" class="data-value medium">6.5/10.0</div>
+                </div>
+                <div class="risk-bar">
+                    <div id="leakage-bar" class="risk-fill" style="width: 65%; background-color: #FFB800;"></div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">EXPOSED DATA:</div>
+                    <div id="exposed-data" class="data-value">Geolocation, Device Info, Behavior</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">TRACKERS:</div>
+                    <div id="trackers-value" class="data-value">3 DETECTED</div>
+                </div>
+            </div>
+            
+            <!-- Advanced Profiling Panel -->
+            <div class="dashboard-panel">
+                <h2 class="panel-header">ADVANCED PROFILING</h2>
+                <div class="data-row">
+                    <div class="data-label">NOISE LEVEL:</div>
+                    <div id="noise-level" class="data-value">40/100</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">SPEECH:</div>
+                    <div id="speech-value" class="data-value high">MIC ACCESS REQ</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">MOTION PATTERNS:</div>
+                    <div id="motion-patterns" class="data-value">STATIONARY</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">LIGHT LEVEL:</div>
+                    <div id="light-level" class="data-value">API N/A</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">FONTS:</div>
+                    <div id="fonts-value" class="data-value medium">40 DETECTED</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">FORM TIME:</div>
+                    <div id="form-time" class="data-value">3.2s</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">TAB STATUS:</div>
+                    <div id="tab-visibility" class="data-value">ACTIVE</div>
+                </div>
+                <div class="data-row">
+                    <div class="data-label">STORAGE USE:</div>
+                    <div id="storage-use" class="data-value">LS: 0 KB | SS: 0 KB</div>
+                </div>
+            </div>
+            
+            <!-- Summary Panel -->
+            <div class="dashboard-panel" style="grid-column: span 4;">
+                <h2 class="panel-header">SENTINEL ANALYSIS RESULTS</h2>
+                <p id="analysis-result" style="margin-bottom: 15px; color: #FF005C; font-weight: bold;">
+                    SENTINEL ANALYSIS COMPLETE. The collected data reveals your digital footprint is <span style="color: #FF005C; font-weight: bold;">extremely identifiable</span>. 
+                    Your browser exposes significant information that enables precise tracking, identification, and potential security vulnerabilities.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 10px; border-left: 2px solid #00FFFF;">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">Location (Est.):</div>
+                        <div id="summary-location" style="color: #00FFFF; font-weight: bold; font-size: 14px;">East Coast, United States</div>
+                    </div>
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 10px; border-left: 2px solid #00FFFF;">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">Device Profile:</div>
+                        <div id="summary-device" style="color: #00FFFF; font-weight: bold; font-size: 14px;">Unknown running MacOS with Chrome 119</div>
+                    </div>
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 10px; border-left: 2px solid #00FFFF;">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">Browser Uniqueness:</div>
+                        <div id="summary-uniqueness" style="color: #FF005C; font-weight: bold; font-size: 14px;">Extremely Unique (1 in 3M browsers)</div>
+                    </div>
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 10px; border-left: 2px solid #00FFFF;">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px;">Return Visitor Detection:</div>
+                        <div id="summary-persistence" style="color: #FF005C; font-weight: bold; font-size: 14px;">Very High (>95% confidence)</div>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 20px; text-align: center; font-size: 14px;">
+                    OWL Advisory Group offers advanced countermeasures and privacy protection services to address these vulnerabilities.
+                </p>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <button id="generateReportBtn" class="auth-button" style="display: inline-block;">
+                        GENERATE FULL REPORT
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global app state - Tracks where the user is and controls data collection
+        const appState = {
+            currentScreen: 'landing',
+            dataCollectionActive: false, // CRITICAL: This flag prevents data collection until dashboard
+            assessmentProgress: 0,
+            assessmentComplete: false,
+            startTime: new Date(),
+            keysPressed: [],
+            cursorPositions: [],
+            clickCount: 0,
+            audioContext: null,
+            permissionLog: []
+        };
+        
+        // Make app state globally available
+        window.appState = appState;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing application with proper flow control...');
+            
+            // Cache DOM elements for performance
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const termsButton = document.getElementById('termsButton');
+            const userIdentity = document.getElementById('userIdentity');
+            const landingScreen = document.getElementById('landingScreen');
+            const assessmentScreen = document.getElementById('assessmentScreen');
+            const dashboardScreen = document.getElementById('dashboardScreen');
+            const progressFill = document.getElementById('progressFill');
+            const progressValue = document.getElementById('progressValue');
+            const assessmentLogs = document.getElementById('assessmentLogs');
+            const continueButton = document.getElementById('continueButton');
+            
+            // Permission buttons
+            const cameraBtn = document.getElementById('cameraBtn');
+            const micBtn = document.getElementById('micBtn');
+            const geoBtn = document.getElementById('geoBtn');
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            
+            // Configure landing screen controls
+            termsCheckbox.addEventListener('change', function() {
+                termsButton.disabled = !this.checked;
+            });
+            
+            // Permission request handlers
+            if (cameraBtn) {
+                cameraBtn.addEventListener('click', requestCamera);
+            }
+            
+            if (micBtn) {
+                micBtn.addEventListener('click', requestMicrophone);
+            }
+            
+            if (geoBtn) {
+                geoBtn.addEventListener('click', requestGeolocation);
+            }
+            
+            if (generateReportBtn) {
+                generateReportBtn.addEventListener('click', generateFullReport);
+            }
+            
+            // Transition from landing to assessment screen
+            termsButton.addEventListener('click', function() {
+                if (!termsCheckbox.checked || !userIdentity.value.trim()) {
+                    alert('Please enter your identifier and accept the terms to continue.');
+                    return;
+                }
+                
+                console.log('User accepted terms, proceeding to assessment...');
+                
+                // Update state
+                appState.currentScreen = 'assessment';
+                
+                // Hide landing screen
+                landingScreen.classList.add('hidden');
+                
+                // Show assessment screen
+                assessmentScreen.classList.remove('hidden');
+                
+                // Begin the assessment process
+                startAssessment(userIdentity.value);
+            });
+            
+            // Transition from assessment to dashboard
+            if (continueButton) {
+                continueButton.addEventListener('click', function() {
+                    // Only proceed if assessment is complete
+                    if (!appState.assessmentComplete) {
+                        return;
+                    }
+                    
+                    console.log('Proceeding to dashboard...');
+                    
+                    // Update state
+                    appState.currentScreen = 'dashboard';
+                    
+                    // Hide assessment screen
+                    assessmentScreen.classList.add('hidden');
+                    
+                    // Show dashboard screen
+                    dashboardScreen.classList.remove('hidden');
+                    
+                    // CRITICAL: Only activate data collection after reaching dashboard
+                    appState.dataCollectionActive = true;
+                    console.log('Data collection activated');
+                    
+                    // Now that we're authorized, start collecting data
+                    startDataCollection(userIdentity.value);
+                    
+                    // Create synthetic audio welcome
+                    createSyntheticWelcome(userIdentity.value);
+                    
+                    // Request notification permission
+                    setTimeout(requestNotificationPermission, 2000);
+                });
+            }
+            
+            // Simulate assessment process
+            function startAssessment(username) {
+                console.log(`Starting assessment for ${username}...`);
+                
+                // Disable continue button until assessment completes
+                if (continueButton) continueButton.disabled = true;
+                
+                // Log the start of assessment
+                addAssessmentLog('Initializing system assessment...');
+                
+                // Update username display in assessment screen
+                const usernameDisplay = document.getElementById('username-display');
+                if (usernameDisplay) usernameDisplay.textContent = username;
+                
+                // Simulate assessment progress with staged execution
+                const assessmentSteps = [
+                    { progress: 10, message: 'Checking browser capabilities...' },
+                    { progress: 20, message: 'Analyzing system configuration...' },
+                    { progress: 30, message: 'Preparing security modules...' },
+                    { progress: 40, message: 'Initializing reconnaissance framework...' },
+                    { progress: 50, message: 'Configuring data collection parameters...' },
+                    { progress: 60, message: 'Validating security protocols...' },
+                    { progress: 70, message: 'Configuring behavioral analysis...' },
+                    { progress: 80, message: 'Preparing dashboard visualization...' },
+                    { progress: 90, message: 'Analyzing potential vulnerabilities...' },
+                    { progress: 100, message: 'Assessment complete. Ready to proceed to dashboard.' }
+                ];
+                
+                // Execute each step with increasing delays
+                let stepIndex = 0;
+                const stepInterval = setInterval(() => {
+                    if (stepIndex >= assessmentSteps.length) {
+                        clearInterval(stepInterval);
+                        assessmentComplete();
+                        return;
+                    }
+                    
+                    const step = assessmentSteps[stepIndex];
+                    updateAssessmentProgress(step.progress, step.message);
+                    stepIndex++;
+                }, 800);
+            }
+            
+            function updateAssessmentProgress(progress, message) {
+                appState.assessmentProgress = progress;
+                
+                // Update UI
+                if (progressFill) progressFill.style.width = `${progress}%`;
+                if (progressValue) progressValue.textContent = `${progress}%`;
+                
+                // Add log entry
+                addAssessmentLog(message);
+                
+                // Update circles based on progress
+                updateStatusCircles(progress);
+            }
+            
+            function addAssessmentLog(message) {
+                if (!assessmentLogs) return;
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.textContent = message;
+                assessmentLogs.appendChild(logEntry);
+                
+                // Auto-scroll to bottom
+                assessmentLogs.scrollTop = assessmentLogs.scrollHeight;
+            }
+            
+            function updateStatusCircles(progress) {
+                const circles = document.querySelectorAll('.status-circle');
+                circles.forEach((circle, index) => {
+                    const threshold = (index + 1) * 25;
+                    if (progress >= threshold) {
+                        circle.classList.add('active');
+                    } else {
+                        circle.classList.remove('active');
+                    }
+                });
+            }
+            
+            function assessmentComplete() {
+                // Mark assessment as complete
+                appState.assessmentComplete = true;
+                
+                // Enable continue button
+                if (continueButton) {
+                    continueButton.disabled = false;
+                    continueButton.focus();
+                }
+                
+                // Add final log entries
+                addAssessmentLog('SYSTEM READY - All assessment checks passed.');
+                addAssessmentLog('You may now proceed to the dashboard.');
+            }
+            
+            // Try to collect data - will only succeed if dataCollectionActive is true
+            function attemptDataCollection() {
+                // Check if we're authorized to collect data
+                if (!appState.dataCollectionActive) {
+                    console.log('Data collection not active yet - waiting for user to reach dashboard');
+                    return false;
+                }
+                
+                // If we get here, we're authorized to collect data
+                console.log('Data collection is active, proceeding with collection');
+                return true;
+            }
+            
+            // Start data collection process when authorized
+            function startDataCollection(username) {
+                if (!attemptDataCollection()) {
+                    console.log('Data collection aborted - not yet authorized');
+                    return;
+                }
+                
+                console.log('Starting data collection process...');
+                
+                // Set username and session ID
+                const usernameEl = document.getElementById('username-value');
+                if (usernameEl && username) {
+                    usernameEl.textContent = username;
+                }
+                
+                const sessionIdEl = document.getElementById('session-id-value');
+                if (sessionIdEl) {
+                    const sessionId = generateHash(navigator.userAgent + new Date().getTime());
+                    sessionIdEl.textContent = sessionId.substring(0, 8);
+                }
+                
+                // Set basic browser information
+                updateElement('browser-value', getBrowserInfo());
+                updateElement('user-agent-value', navigator.userAgent);
+                updateElement('local-time-value', new Date().toLocaleTimeString());
+                updateElement('timezone-value', Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown');
+                updateElement('language-value', navigator.language || 'Unknown');
+                updateElement('languages-value', navigator.languages ? navigator.languages.join(', ') : 'N/A');
+                
+                // Device and system information
+                updateElement('device-type', getDeviceType());
+                updateElement('os-value', getOSInfo());
+                updateElement('cpu-value', navigator.hardwareConcurrency || 'Unknown');
+                updateElement('memory-value', '8 GB (API Est.)');
+                
+                // Screen and viewport
+                updateElement('screen-value', `${window.screen.width}x${window.screen.height}@${window.devicePixelRatio}x`);
+                updateElement('viewport-value', `${window.innerWidth}x${window.innerHeight}`);
+                updateElement('screen-caps', `ColorDepth: ${window.screen.colorDepth}, PixelDepth: ${window.screen.pixelDepth}`);
+                
+                // Cookies and storage
+                updateElement('cookies-value', navigator.cookieEnabled ? 'ENABLED' : 'DISABLED');
+                updateElement('dnt-status', navigator.doNotTrack ? 'ENABLED (DNT)' : 'DISABLED');
+                
+                // Storage
+                const storageTypes = [];
+                if (typeof localStorage !== 'undefined') storageTypes.push('LocalStorage');
+                if (typeof sessionStorage !== 'undefined') storageTypes.push('SessionStorage');
+                if (typeof indexedDB !== 'undefined') storageTypes.push('IndexedDB');
+                updateElement('storage-value', `Avail (${storageTypes.join(', ')})`);
+                
+                // Generate fingerprints
+                const fingerprint = generateHash(navigator.userAgent + screen.width + navigator.language);
+                updateElement('fingerprint-value', fingerprint.substring(0, 8));
+                updateElement('canvas-fp', generateHash(screen.width + document.documentElement.offsetWidth).substring(0, 8));
+                updateElement('audio-fp', generateHash(navigator.userAgent + navigator.languages).substring(0, 8));
+                updateElement('webgl-fp', generateHash(navigator.userAgent + screen.colorDepth).substring(0, 8));
+                
+                // Plugins and fonts
+                const plugins = Array.from(navigator.plugins || []).map(p => p.name);
+                updateElement('plugins-value', plugins.length > 0 ? 
+                    `${plugins.length} (${plugins.slice(0, 2).join(', ')}...)` : 'None detected');
+                
+                // Generate network map visualization
+                generateNetworkMap();
+                
+                // Set up event listeners for behavioral tracking
+                initializeBehavioralTracking();
+                
+                // Start periodic updates
+                startPeriodicUpdates();
+                
+                console.log('Initial data collection complete');
+            }
+            
+            // Set up event listeners for behavioral tracking
+            function initializeBehavioralTracking() {
+                if (!appState.dataCollectionActive) return;
+                
+                // Track mouse movement
+                document.addEventListener('mousemove', function(e) {
+                    if (!appState.dataCollectionActive) return;
+                    
+                    updateElement('cursor-position', `${e.clientX}, ${e.clientY}`);
+                    
+                    // Movement pattern detection
+                    const speed = Math.sqrt(Math.pow(e.movementX, 2) + Math.pow(e.movementY, 2));
+                    const patternEl = document.getElementById('movement-pattern');
+                    
+                    if (speed > 10) {
+                        updateElement('movement-pattern', 'FAST');
+                        if (patternEl) patternEl.className = 'data-value high';
+                    } else if (speed > 2) {
+                        updateElement('movement-pattern', 'NORMAL');
+                        if (patternEl) patternEl.className = 'data-value medium';
+                    } else {
+                        updateElement('movement-pattern', 'SLOW');
+                        if (patternEl) patternEl.className = 'data-value low';
+                    }
+                    
+                    // Store for analysis
+                    appState.cursorPositions.push({
+                        x: e.clientX,
+                        y: e.clientY,
+                        time: Date.now()
+                    });
+                    
+                    // Limit stored positions to 100
+                    if (appState.cursorPositions.length > 100) {
+                        appState.cursorPositions.shift();
+                    }
+                });
+                
+                // Track scroll depth
+                document.addEventListener('scroll', function() {
+                    if (!appState.dataCollectionActive) return;
+                    
+                    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    if (scrollHeight <= 0) return; // Avoid division by zero
+                    
+                    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                    const scrollPercent = Math.round((scrollTop / scrollHeight) * 100);
+                    
+                    updateElement('scroll-depth', `${scrollPercent}%`);
+                });
+                
+                // Track keyboard input
+                document.addEventListener('keydown', function(e) {
+                    if (!appState.dataCollectionActive) return;
+                    
+                    // Don't log modifier keys
+                    if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(e.key)) return;
+                    
+                    // Store keystroke with timestamp
+                    appState.keysPressed.push({
+                        key: e.key,
+                        time: Date.now()
+                    });
+                    
+                    // Limit stored keys to 50
+                    if (appState.keysPressed.length > 50) {
+                        appState.keysPressed.shift();
+                    }
+                    
+                    // Update keystroke log
+                    const keystrokeLog = document.getElementById('keystrokeAnalysis');
+                    if (keystrokeLog) {
+                        // Format in a way that preserves user privacy while demonstrating capability
+                        const sanitizedKey = e.key.length === 1 ? '*' : `[${e.key}]`;
+                        const entry = document.createElement('div');
+                        entry.textContent = `${new Date().toLocaleTimeString()} - Key: ${sanitizedKey}`;
+                        keystrokeLog.appendChild(entry);
+                        
+                        // Keep log at reasonable size
+                        if (keystrokeLog.childNodes.length > 10) {
+                            keystrokeLog.removeChild(keystrokeLog.firstChild);
+                        }
+                        
+                        // Auto-scroll to bottom
+                        keystrokeLog.scrollTop = keystrokeLog.scrollHeight;
+                    }
+                    
+                    // Update typing dynamics
+                    const dynamicsEl = document.getElementById('typing-dynamics');
+                    if (dynamicsEl && appState.keysPressed.length >= 2) {
+                        const lastKey = appState.keysPressed[appState.keysPressed.length - 1];
+                        const prevKey = appState.keysPressed[appState.keysPressed.length - 2];
+                        const timeBetween = lastKey.time - prevKey.time;
+                        
+                        if (timeBetween < 100) {
+                            updateElement('typing-dynamics', 'VERY FAST');
+                            if (dynamicsEl) dynamicsEl.className = 'data-value high';
+                        } else if (timeBetween < 200) {
+                            updateElement('typing-dynamics', 'FAST');
+                            if (dynamicsEl) dynamicsEl.className = 'data-value medium';
+                        } else {
+                            updateElement('typing-dynamics', 'NORMAL');
+                            if (dynamicsEl) dynamicsEl.className = 'data-value low';
+                        }
+                    }
+                });
+                
+                // Track clicks
+                document.addEventListener('click', function() {
+                    if (!appState.dataCollectionActive) return;
+                    
+                    appState.clickCount++;
+                    updateElement('click-patterns', `${appState.clickCount} CLICKS`);
+                });
+                
+                // Track tab visibility
+                document.addEventListener('visibilitychange', function() {
+                    if (!appState.dataCollectionActive) return;
+                    
+                    updateElement('tab-visibility', document.hidden ? 'INACTIVE' : 'ACTIVE');
+                });
+            }
+            
+            // Permission request handlers
+            function requestCamera() {
+                if (!appState.dataCollectionActive) return;
+                
+                addPermissionLog('Requesting camera access...');
+                
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        updateElement('camera-value', 'ACCESS GRANTED');
+                        const cameraEl = document.getElementById('camera-value');
+                        if (cameraEl) cameraEl.className = 'data-value low';
+                        
+                        addPermissionLog('Camera access granted!');
+                        
+                        // Stop the tracks after getting permission
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        // Show notification
+                        createNotification('Camera Access Granted', 'The website now has access to your camera.');
+                    })
+                    .catch(function(err) {
+                        updateElement('camera-value', 'PERMISSION DENIED');
+                        addPermissionLog(`Camera access denied: ${err.message}`);
+                    });
+            }
+            
+            function requestMicrophone() {
+                if (!appState.dataCollectionActive) return;
+                
+                addPermissionLog('Requesting microphone access...');
+                
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        updateElement('mic-value', 'ACCESS GRANTED');
+                        const micEl = document.getElementById('mic-value');
+                        if (micEl) micEl.className = 'data-value low';
+                        
+                        addPermissionLog('Microphone access granted!');
+                        
+                        // Create audio context and speak confirmation
+                        createAudioContext();
+                        
+                        // Stop the tracks after getting permission
+                        stream.getTracks().forEach(track => track.stop());
+                        
+                        // Show notification
+                        createNotification('Microphone Access Granted', 'The website now has access to your microphone.');
+                        
+                        // Generate synthetic voice
+                        speakMessage("Microphone access confirmed. Voice analysis enabled.");
+                    })
+                    .catch(function(err) {
+                        updateElement('mic-value', 'PERMISSION DENIED');
+                        addPermissionLog(`Microphone access denied: ${err.message}`);
+                    });
+            }
+            
+            function requestGeolocation() {
+                if (!appState.dataCollectionActive) return;
+                
+                addPermissionLog('Requesting geolocation access...');
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude.toFixed(2);
+                        const lon = position.coords.longitude.toFixed(2);
+                        
+                        updateElement('geo-value', 'ACCESS GRANTED');
+                        updateElement('location-value', `${lat}, ${lon}`);
+                        
+                        const geoEl = document.getElementById('geo-value');
+                        if (geoEl) geoEl.className = 'data-value low';
+                        
+                        addPermissionLog(`Geolocation access granted! Coords: ${lat}, ${lon}`);
+                        
+                        // Show notification
+                        createNotification('Location Access Granted', 'The website now has access to your precise location.');
+                    },
+                    function(err) {
+                        updateElement('geo-value', 'PERMISSION DENIED');
+                        addPermissionLog(`Geolocation access denied: ${err.message}`);
+                    }
+                );
+            }
+            
+            function requestNotificationPermission() {
+                if (!appState.dataCollectionActive) return;
+                
+                if ('Notification' in window) {
+                    addPermissionLog('Requesting notification permission...');
+                    
+                    Notification.requestPermission().then(function(permission) {
+                        if (permission === 'granted') {
+                            addPermissionLog('Notification permission granted!');
+                            createNotification('Surveillance Active', 'OWL Sentinel is now monitoring your browser activity.');
+                        } else {
+                            addPermissionLog('Notification permission denied.');
+                        }
+                    });
+                }
+            }
+            
+            // Add log entry to permission status
+            function addPermissionLog(message) {
+                const permissionStatus = document.getElementById('permission-status');
+                if (!permissionStatus) return;
+                
+                const logEntry = document.createElement('div');
+                logEntry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+                permissionStatus.appendChild(logEntry);
+                
+                // Store in app state
+                appState.permissionLog.push({
+                    message,
+                    time: Date.now()
+                });
+                
+                // Auto-scroll to bottom
+                permissionStatus.scrollTop = permissionStatus.scrollHeight;
+            }
+            
+            // Create desktop notification
+            function createNotification(title, body) {
+                if (!appState.dataCollectionActive) return;
+                
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(title, {
+                        body: body,
+                        icon: 'img/owl-icon-192.png'
+                    });
+                }
+            }
+            
+            // Create audio context for synthetic speech
+            function createAudioContext() {
+                if (appState.audioContext) return;
+                
+                try {
+                    appState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.error('Audio context could not be created:', e);
+                }
+            }
+            
+            // Generate synthetic speech
+            function speakMessage(message) {
+                if (!appState.dataCollectionActive) return;
+                
+                if ('speechSynthesis' in window) {
+                    const speech = new SpeechSynthesisUtterance();
+                    speech.text = message;
+                    speech.volume = 0.8;
+                    speech.rate = 1.0;
+                    speech.pitch = 1.0;
+                    
+                    // Use a more synthetic-sounding voice if available
+                    const voices = window.speechSynthesis.getVoices();
+                    const femaleVoice = voices.find(voice => voice.name.includes('Female') || voice.name.includes('Google'));
+                    if (femaleVoice) {
+                        speech.voice = femaleVoice;
+                    }
+                    
+                    window.speechSynthesis.speak(speech);
+                }
+            }
+            
+            // Create synthetic welcome
+            function createSyntheticWelcome(username) {
+                setTimeout(() => {
+                    speakMessage(`Welcome, ${username}. Owl Sentinel scan is now active. Your system is being analyzed.`);
+                }, 1000);
+            }
+            
+            // Generate full report
+            function generateFullReport() {
+                if (!appState.dataCollectionActive) return;
+                
+                speakMessage("Generating comprehensive security report. Analysis complete. High risk factors detected.");
+                
+                setTimeout(() => {
+                    alert("Full report generation simulation complete. In a production environment, this would generate a detailed PDF of all collected data and vulnerability analysis.");
+                }, 2000);
+            }
+            
+            // Generate network map visualization
+            function generateNetworkMap() {
+                const mapContainer = document.getElementById('network-map-visual');
+                if (!mapContainer) return;
+                
+                // Clear any existing content
+                mapContainer.innerHTML = '';
+                
+                // Create central node (representing the user)
+                const centralNode = document.createElement('div');
+                centralNode.className = 'node';
+                centralNode.style.backgroundColor = '#9D00FF';
+                centralNode.style.width = '8px';
+                centralNode.style.height = '8px';
+                centralNode.style.top = '50%';
+                centralNode.style.left = '50%';
+                centralNode.style.transform = 'translate(-50%, -50%)';
+                centralNode.style.boxShadow = '0 0 8px #9D00FF';
+                mapContainer.appendChild(centralNode);
+                
+                // Generate 8-12 random nodes
+                const nodeCount = 8 + Math.floor(Math.random() * 5);
+                
+                for (let i = 0; i < nodeCount; i++) {
+                    // Create a new node
+                    const node = document.createElement('div');
+                    node.className = 'node';
+                    
+                    // Position randomly, but avoid edges
+                    const top = 10 + Math.random() * 80;
+                    const left = 10 + Math.random() * 80;
+                    
+                    node.style.top = `${top}%`;
+                    node.style.left = `${left}%`;
+                    
+                    mapContainer.appendChild(node);
+                    
+                    // Create connection line to central node
+                    const connection = document.createElement('div');
+                    connection.className = 'connection';
+                    
+                    // Calculate angle and length
+                    const centerTop = 50;
+                    const centerLeft = 50;
+                    const dx = left - centerLeft;
+                    const dy = top - centerTop;
+                    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Style the connection
+                    connection.style.width = `${length}%`;
+                    connection.style.top = `${centerTop}%`;
+                    connection.style.left = `${centerLeft}%`;
+                    connection.style.transform = `rotate(${angle}deg)`;
+                    
+                    mapContainer.appendChild(connection);
+                }
+                
+                // Create animated "scan" pulse
+                const scanPulse = document.createElement('div');
+                scanPulse.style.position = 'absolute';
+                scanPulse.style.top = '50%';
+                scanPulse.style.left = '50%';
+                scanPulse.style.transform = 'translate(-50%, -50%)';
+                scanPulse.style.width = '10px';
+                scanPulse.style.height = '10px';
+                scanPulse.style.backgroundColor = 'transparent';
+                scanPulse.style.borderRadius = '50%';
+                scanPulse.style.border = '1px solid #00FFFF';
+                scanPulse.style.animation = 'pulse 2s infinite';
+                
+                // Add keyframe animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes pulse {
+                        0% { width: 10px; height: 10px; opacity: 1; }
+                        100% { width: 100px; height: 100px; opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                mapContainer.appendChild(scanPulse);
+            }
+            
+            // Periodic updates for real-time data
+            function startPeriodicUpdates() {
+                // Update every second
+                setInterval(() => {
+                    if (!appState.dataCollectionActive) return;
+                    
+                    // Update time on page
+                    const timeOnPage = Math.floor((Date.now() - appState.startTime) / 1000);
+                    const minutes = Math.floor(timeOnPage / 60);
+                    const seconds = timeOnPage % 60;
+                    updateElement('time-on-page', `${minutes}m ${seconds}s`);
+                    
+                    // Update local time
+                    updateElement('local-time-value', new Date().toLocaleTimeString());
+                    
+                    // Battery info if available
+                    if ('getBattery' in navigator) {
+                        navigator.getBattery().then(function(battery) {
+                            const level = Math.round(battery.level * 100);
+                            const charging = battery.charging ? 'Charging' : 'Discharging';
+                            updateElement('battery-text', `${level}% (${charging})`);
+                        });
+                    }
+                    
+                    // Update storage use
+                    let lsSize = 0;
+                    let ssSize = 0;
+                    
+                    try {
+                        // Estimate localStorage size
+                        lsSize = Object.keys(localStorage).reduce((total, key) => {
+                            return total + localStorage.getItem(key).length;
+                        }, 0);
+                        
+                        // Estimate sessionStorage size
+                        ssSize = Object.keys(sessionStorage).reduce((total, key) => {
+                            return total + sessionStorage.getItem(key).length;
+                        }, 0);
+                    } catch (e) {
+                        console.warn('Error calculating storage size', e);
+                    }
+                    
+                    updateElement('storage-use', `LS: ${Math.round(lsSize / 1024)} KB | SS: ${Math.round(ssSize / 1024)} KB`);
+                }, 1000);
+            }
+            
+            // Update element's text content
+            function updateElement(id, value) {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            }
+            
+            // Helper function to generate hash
+            function generateHash(input) {
+                let hash = 0;
+                if (typeof input !== 'string') {
+                    input = String(input);
+                }
+                
+                for (let i = 0; i < input.length; i++) {
+                    const char = input.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32bit integer
+                }
+                
+                // Convert to 8-character hex string
+                return (hash >>> 0).toString(16).padStart(8, '0');
+            }
+            
+            // Helper function to detect device type
+            function getDeviceType() {
+                const ua = navigator.userAgent;
+                if (/Mobile|Android|iPhone|iPad|iPod/.test(ua)) {
+                    return 'Mobile';
+                }
+                return 'Desktop';
+            }
+            
+            // Helper function to detect OS
+            function getOSInfo() {
+                const ua = navigator.userAgent;
+                if (/Windows/.test(ua)) return 'Windows';
+                if (/Macintosh|Mac OS X/.test(ua)) return 'MacOS';
+                if (/Linux/.test(ua)) return 'Linux';
+                if (/Android/.test(ua)) return 'Android';
+                if (/iPhone|iPad|iPod/.test(ua)) return 'iOS';
+                return 'Unknown OS';
+            }
+            
+            // Helper function to get browser info
+            function getBrowserInfo() {
+                const ua = navigator.userAgent;
+                if (/Firefox\/([0-9]+)/.test(ua)) {
+                    return `Firefox ${RegExp.$1}`;
+                } else if (/Edge\/([0-9]+)/.test(ua) || /Edg\/([0-9]+)/.test(ua)) {
+                    return `Edge ${RegExp.$1}`;
+                } else if (/Chrome\/([0-9]+)/.test(ua)) {
+                    return `Chrome ${RegExp.$1}`;
+                } else if (/Safari\/([0-9]+)/.test(ua)) {
+                    return `Safari ${RegExp.$1}`;
+                }
+                return 'Unknown Browser';
+            }
+        });
+    </script>
+</body>
+</html>
